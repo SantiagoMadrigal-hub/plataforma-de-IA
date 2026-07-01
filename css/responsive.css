@@ -1,0 +1,166 @@
+/* ==========================================================================
+   DISEÑO RESPONSIVE (MEDIA QUERIES)
+   ========================================================================== */
+
+/* Tablets y Pantallas Medianas (A partir de 992px hacia abajo) */
+@media (max-width: 992px) {
+  .cards-container, 
+  .steps-list, 
+  .valuers {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .popular {
+    transform: none;
+    padding-top: 2.5rem;
+  }
+
+  /* Stats grid en tablets */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Dispositivos Móviles (A partir de 768px hacia abajo) */
+@media (max-width: 768px) {
+  /* La barra de navegación se vuelve vertical en móviles */
+  .navbar {
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: center;
+  }
+
+  .menu {
+    flex-direction: column;
+    width: 100%;
+    margin-left: 0;
+    gap: 1rem;
+  }
+
+  .menu-items {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .auth-links {
+    margin-left: 0;
+  }
+
+  /* Reducción del tamaño de fuente del título principal */
+  .hero h2 {
+    font-size: 2rem;
+  }
+
+  /* Todas las grillas pasan a ser de 1 sola columna para leerse en vertical */
+  .cards-container, 
+  .steps-list, 
+  .valuers {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  /* Los botones del Hero se apilan verticalmente ocupando todo el ancho */
+  .hero .buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero .buttons .btn-primary,
+  .hero .buttons .btn-outline {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+
+/********************************PROFILE **********************************/
+
+@media (max-width: 768px) {
+  /* ... tus estilos de responsive anteriores ... */
+
+  /* Escala tipográfica del header en móviles */
+  .app-header h1 {
+    font-size: 1.625rem;
+  }
+
+  /* La navegación superior se apila en pantallas estrechas */
+  .app-header-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  /* El layout del generador pasa de 2 columnas a 1 sola en móviles */
+  .generator-container {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  /* Los botones de acciones se adaptan para ocupar todo el ancho en listas individuales */
+  .action-buttons {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  /* Dashboard: sidebar se vuelve top bar */
+  .dashboard-layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-4) var(--space-6);
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .sidebar-logo {
+    margin-bottom: 0;
+    font-size: var(--text-xl);
+  }
+
+  .sidebar-nav ul {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .sidebar-nav li {
+    margin-bottom: 0;
+  }
+
+  .sidebar-nav a {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-sm);
+  }
+
+  .sidebar-nav a.active {
+    border-left: none;
+    border-bottom: 2px solid var(--color-primary);
+    padding-left: var(--space-3);
+  }
+
+  /* Stats grid en settings se achica */
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Signup/Login box ocupa todo el ancho */
+  .signup-box {
+    padding: var(--space-8);
+  }
+
+  /* Tabla de historial scroll horizontal (wrapper ya lo maneja) */
+  .history-container {
+    padding-inline: 0;
+  }
+
+  .history-panel {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+}

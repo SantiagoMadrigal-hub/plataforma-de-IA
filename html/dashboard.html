@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Panel de control de Lexora" />
+    <meta name="robots" content="noindex,nofollow" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/vendor/aos.css">
+    <link rel="stylesheet" href="../css/vendor/glide.core.min.css">
+
+    <link rel="stylesheet" href="/css/variables-globales.css">
+    <link rel="stylesheet" href="/css/estilos-globales.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/componentes.css">
+    <link rel="stylesheet" href="/css/secciones-especificas.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+
+    <title>Dashboard - Lexora</title>
+</head>
+<body class="dark-theme">
+
+    <div class="dashboard-layout">
+        
+        <aside class="sidebar">
+            <a href="dashboard.html" style="text-decoration: none;"><h2 class="sidebar-logo">Lexora</h2></a>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                    <li><a href="generador.html">Generador de IA</a></li>
+                    <li><a href="history.html">Historial</a></li>
+                    <li><a href="settings.html">Configuración</a></li>
+                    <li><a href="#" class="logout-btn">Cerrar Sesión</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <div class="dashboard-content">
+            
+            <header class="dashboard-header">
+                <p class="welcome-text">Bienvenido</p>
+                <div class="user-info">
+                    <p class="credits-badge">Créditos: 87</p>
+                    <a href="profile.html" class="profile-link"><img src="https://via.placeholder.com/40" alt="Perfil" class="profile-pic"></a>
+                </div>
+            </header>
+
+            <main class="dashboard-main">
+                
+                <section class="welcome-section">
+                    <h2>Bienvenido de nuevo 👋</h2>
+                    <a href="generador.html" class="btn-primary">+ Nuevo documento</a>
+                </section>
+
+                <section>
+                    <!-- Debajo de tu saludo, agregamos el de métricas -->
+                <div class="react-mount" data-component="MetricsPanel"></div>
+                <!-- Más abajo, donde están los documentos, agregamos el de la lista -->
+                <div class="react-mount" data-component="SmartDocumentList"></div>
+                </section>
+
+
+            </main>
+        </div>
+    </div>
+
+    <script src="../js/vendor/iconify-icon.min.js"></script>
+    <script src="../js/vendor/micromodal.min.js"></script>
+    <script src="../js/vendor/glide.min.js"></script>
+    <script src="../js/vendor/aos.js"></script>
+    <script type="module" src="../js/main.js"></script>
+</body>
+</html>

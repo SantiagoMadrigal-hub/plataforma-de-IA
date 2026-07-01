@@ -1,0 +1,594 @@
+/* Componente: Botones */
+button {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border: 2px solid var(--color-primary);
+  padding: 16px 28px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  width: auto;
+  box-shadow: var(--shadow-sm);
+}
+
+button.btn-full {
+  width: 100%;
+}
+
+button:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3), 0 2px 4px -2px rgba(79, 70, 229, 0.3);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+button:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+button.btn-outline {
+  background-color: transparent;
+  color: #6b7280;
+  border-color: #d1d5db;
+}
+
+button.btn-outline:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+/* Variante outline para <a> */
+.btn-outline {
+  display: inline-block;
+  background-color: transparent;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+/* Variante accent para CTA de énfasis medio (Business) */
+.btn-outline-accent {
+  display: inline-block;
+  background-color: transparent;
+  color: #4f46e5;
+  border: 1.5px solid #4f46e5;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-accent:hover {
+  background-color: rgba(79, 70, 229, 0.08);
+  color: #3730a3;
+  border-color: #3730a3;
+}
+
+/* Botón primario para elementos <a> con apariencia de botón */
+.btn-primary {
+  display: inline-block;
+  background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+  color: var(--color-white);
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3), 0 2px 4px -2px rgba(79, 70, 229, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+  color: var(--color-white);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Contenedor interno del menú (navbar) */
+.menu {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  margin-left: 3rem;
+}
+
+/* Componente: Menú de navegación */
+.menu-items {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* Logo de la marca */
+.logo {
+  text-decoration: none;
+  color: #0f172a;
+  letter-spacing: -0.03em;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* Enlaces de navegación principales */
+.nav-links .item a {
+  color: #475569;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.nav-links .item a:hover {
+  color: var(--color-primary);
+}
+
+/* Enlace de inicio de sesión */
+.login-link {
+  color: #475569;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.login-link:hover {
+  color: #1f2937;
+}
+
+/* Agrupación de acciones de usuario */
+.auth-links {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: auto;
+}
+
+/* Componente: Tarjeta (Card reutilizable) */
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-white);
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid #E2E8F0;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.card p {
+  flex: 1;
+  color: #4B5563;
+  margin-bottom: 0;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+  color: var(--color-primary);
+}
+
+.card .logo svg {
+  stroke-width: 1.5;
+  transition: transform var(--transition-fast);
+}
+
+.card:hover .logo svg {
+  transform: scale(1.15);
+}
+
+.card .logo h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--color-text-primary);
+}
+
+/* Componente: Badge de destacado */
+.badge-popular {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-primary);
+  color: var(--color-white);
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);
+}
+
+/* Componente: Acordeones (FAQ / Desplegables) */
+details {
+  background: var(--color-white);
+  border: 1px solid #E2E8F0;
+  border-radius: var(--radius-md);
+  margin-bottom: 0.5rem;
+  padding: 0.875rem 1.25rem;
+  transition: box-shadow var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+}
+
+details:hover {
+  background-color: #F8FAFC;
+}
+
+details[open] {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08), 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+}
+
+summary {
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  list-style: none;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+summary::after {
+  content: "+";
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: rgba(79, 70, 229, 0.1);
+  color: var(--color-primary);
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1;
+  transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+details[open] summary::after {
+  transform: rotate(45deg);
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+details p {
+  margin-top: 0.75rem;
+  margin-bottom: 0;
+  font-size: 0.9rem;
+  color: #64748B;
+  animation: fadeInDetails 0.25s ease;
+}
+
+@keyframes fadeInDetails {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/***************************************** Sign Up*****************************/
+
+/* ==========================================================================
+   COMPONENTES: FORMULARIOS (Inputs, Labels, Checkbox)
+   ========================================================================== */
+
+/* Agrupa y da espacio a cada campo (label + input) */
+.form-group {
+  margin-bottom: 20px;
+}
+
+/* Estilo de los textos descriptivos (Labels) */
+.form-label {
+  display: block;
+  font-size: 13px;
+  color: #4a4a4a;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.form-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.form-label-row .form-label {
+  margin-bottom: 0;
+}
+
+.forgot-link {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.forgot-link:hover {
+  color: var(--color-primary);
+}
+
+/* Estilo de la caja de texto (Input) */
+.form-input {
+  width: 100%;
+  padding: 16px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--color-text-primary);
+  background-color: var(--color-white);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.input-wrapper .form-input {
+  padding-right: 44px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6B7280;
+  box-shadow: none;
+}
+
+.password-toggle:hover {
+  opacity: 1;
+}
+
+.form-input:hover {
+  border-color: #9CA3AF;
+}
+
+.form-input:focus {
+  border-color: #6366f1;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12), inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.form-input::placeholder {
+  color: #6B7280;
+}
+
+/* Select arrow personalizado para consistencia cross-browser */
+select.form-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+/* Checkbox personalizado con color de marca */
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.checkbox__input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkbox__custom {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #D1D5DB;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.checkbox__input:checked + .checkbox__custom {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.checkbox__input:focus-visible + .checkbox__custom {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.checkbox__custom svg {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.checkbox__input:checked + .checkbox__custom svg {
+  opacity: 1;
+}
+
+.checkbox__text {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.checkbox__text a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.checkbox__text a:hover {
+  color: var(--color-primary-hover);
+}
+
+/* Helper text debajo de campos */
+.form-helper {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  margin-top: 4px;
+}
+
+
+
+
+/**********************************PROFILE*************************************/
+
+/*PROFILE */
+
+/* Evita que el usuario destruya el diseño deformando el textarea horizontalmente */
+textarea.form-input {
+  resize: vertical; 
+  min-height: 120px;
+}
+
+/* --- INTERACCIONES DE FORMULARIO --- */
+
+/* Foco en el grupo: la label se realza */
+.form-group:focus-within .form-label {
+  color: var(--color-primary);
+}
+
+/* Error general del formulario */
+.form-error {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.dark-theme .form-error {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+/* Input error */
+.form-input.is-error {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.form-input.is-error:hover {
+  border-color: var(--color-error);
+}
+
+/* ==========================================================
+   MICROMODAL — Estilos del modal overlay
+   ========================================================== */
+
+.modal {
+  display: none;
+}
+
+.modal.is-open {
+  display: block;
+}
+
+.modal__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal__container {
+  background: var(--color-white);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  max-width: 420px;
+  width: 90%;
+  box-shadow: var(--shadow-xl);
+  text-align: center;
+  animation: modalSlideUp 0.25s ease;
+}
+
+.modal__container h2 {
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-3);
+}
+
+.modal__container p {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-6);
+}
+
+.modal__close {
+  margin-top: var(--space-4);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+

@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Gestiona tu información personal en Lexora"
+    />
+    <meta name="robots" content="noindex,nofollow" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="../css/vendor/aos.css" />
+    <link rel="stylesheet" href="../css/vendor/glide.core.min.css" />
+
+    <link rel="stylesheet" href="/css/variables-globales.css" />
+    <link rel="stylesheet" href="/css/estilos-globales.css" />
+    <link rel="stylesheet" href="/css/layout.css" />
+    <link rel="stylesheet" href="/css/componentes.css" />
+    <link rel="stylesheet" href="/css/secciones-especificas.css" />
+    <link rel="stylesheet" href="/css/responsive.css" />
+
+    <!--
+      FIX de layout específico para esta página.
+      El grid de 2 columnas del perfil (definido en React) necesita más
+      de ~800px de ancho para mostrar las tarjetas lado a lado. La clase
+      .container-layout (compartida con páginas angostas tipo login)
+      estaba limitando el ancho aquí, dejando todo apretado en 1 columna
+      con espacio muerto a los lados. Este bloque va DESPUÉS de los
+      stylesheets globales a propósito, para ganar en la cascada sin
+      tener que tocar layout.css y arriesgar romper otras páginas.
+    -->
+    <style>
+      :root {
+        --lex-bg: #151521;
+        --lex-card-bg: #1e1e2d;
+        --lex-border: #2a2a3c;
+        --lex-text: #ffffff;
+        --lex-muted: #a1a1aa;
+        --lex-accent: #6366f1;
+      }
+
+      body.dark-theme {
+        background-color: var(--lex-bg);
+      }
+
+      .app-header {
+        background-color: var(--lex-card-bg);
+        border-bottom: 1px solid var(--lex-border);
+        padding: 20px 0 24px;
+      }
+
+      .app-header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .app-header .back-link,
+      .app-header .logout-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--lex-muted);
+        text-decoration: none;
+        font-size: 14px;
+        transition: color 0.2s ease;
+      }
+
+      .app-header .back-link:hover,
+      .app-header .logout-btn:hover {
+        color: var(--lex-text);
+      }
+
+      .app-header-content h1 {
+        color: var(--lex-text);
+        font-size: 26px;
+        font-weight: 700;
+        margin: 0 0 6px;
+      }
+
+      .app-header-content p {
+        color: var(--lex-muted);
+        font-size: 14px;
+        margin: 0;
+      }
+
+      /* El ajuste clave: ancho suficiente para que el grid de 2
+         columnas de las tarjetas del perfil respire de verdad. */
+      .profile-container {
+        max-width: 1100px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 32px 24px 64px;
+        box-sizing: border-box;
+      }
+
+      @media (max-width: 900px) {
+        .profile-container {
+          padding: 24px 16px 48px;
+        }
+      }
+    </style>
+
+    <title>Perfil - Lexora</title>
+  </head>
+  <body class="dark-theme">
+    <script src="../js/vendor/iconify-icon.min.js"></script>
+    <script src="../js/vendor/micromodal.min.js"></script>
+    <script src="../js/vendor/glide.min.js"></script>
+    <script src="../js/vendor/aos.js"></script>
+    <script type="module" src="../js/main.js"></script>
+
+    <header class="app-header">
+      <div class="container-layout">
+        <div class="app-header-top">
+          <a href="dashboard.html" class="back-link">← Volver al Dashboard</a>
+          <a href="#" class="logout-btn">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            Cerrar Sesión
+          </a>
+        </div>
+        <div class="app-header-content">
+          <h1>Mi perfil</h1>
+          <p>
+            Administra tu información personal y mantén tus datos actualizados
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <main class="container-layout profile-container">
+      <!-- El componente React toma el control completo de esta sección -->
+      <div class="react-mount" data-component="UserProfileManager"></div>
+    </main>
+
+    <!-- Modal de éxito (Se mantiene por si necesitas llamarlo desde JS clásico después) -->
+    <div class="modal" id="success-profile" aria-hidden="true">
+      <div class="modal__overlay" data-micromodal-close>
+        <div class="modal__container" role="dialog" aria-modal="true">
+          <h2>✅ Perfil actualizado</h2>
+          <p>Tus datos personales se han guardado correctamente.</p>
+          <button
+            class="btn-full modal__close"
+            data-micromodal-close
+            aria-label="Cerrar"
+          >
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

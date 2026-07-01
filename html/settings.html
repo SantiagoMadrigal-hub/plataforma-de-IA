@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Configuración de tu cuenta en Lexora" />
+    <meta name="robots" content="noindex,nofollow" /> 
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/vendor/aos.css">
+    <link rel="stylesheet" href="../css/vendor/glide.core.min.css">
+
+    <link rel="stylesheet" href="/css/variables-globales.css">
+    <link rel="stylesheet" href="/css/estilos-globales.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/componentes.css">
+    <link rel="stylesheet" href="/css/secciones-especificas.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+    
+    <title>Configuración - Lexora</title>
+  </head>
+  <body class="dark-theme">
+    
+    <script src="../js/vendor/iconify-icon.min.js"></script>
+    <script src="../js/vendor/micromodal.min.js"></script>
+    <script src="../js/vendor/glide.min.js"></script>
+    <script src="../js/vendor/aos.js"></script>
+        <script type="module" src="../js/main.js"></script>
+
+    <header class="app-header">
+        <div class="container-layout">
+            <div class="app-header-top">
+                <a href="dashboard.html" class="back-link">← Volver al Dashboard</a>
+                <a href="#" class="logout-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Cerrar Sesión
+                </a>
+            </div>
+            <div class="app-header-content">
+                <h1>Configuración</h1>
+                <p>Administra tu cuenta, suscripción y preferencias.</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="container-layout settings-container">
+        
+        <section class="settings-panel">
+            <h2>Estado de la suscripción</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Plan activo</h3>
+                    <p class="stat-value">Pro</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Créditos restantes</h3>
+                    <p class="stat-value">87</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Fecha de renovación</h3>
+                    <p class="stat-value">24/07/2026</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="settings-panel">
+            <h2>Información de la cuenta</h2>
+
+            <form action="dashboard.html" method="get" class="form" data-success-modal="success-settings">
+                
+                <div class="form-group">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text" id="nombre" name="nombre" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="correo" class="form-label">Correo Electrónico</label>
+                    <input type="email" id="correo" name="correo" class="form-input" placeholder="tucorreo@ejemplo.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="contrasena" class="form-label">Contraseña</label>
+                    <input type="password" id="contrasena" name="contrasena" class="form-input" placeholder="Deja en blanco para no cambiar">
+                </div>
+
+                <button type="submit" class="btn-full">Actualizar Configuración</button>
+            </form>
+        </section>
+        
+    </main>
+
+    <!-- Modal de éxito -->
+    <div class="modal" id="success-settings" aria-hidden="true">
+      <div class="modal__overlay" data-micromodal-close>
+        <div class="modal__container" role="dialog" aria-modal="true">
+          <h2>✅ Configuración actualizada</h2>
+          <p>Tus cambios han sido guardados correctamente.</p>
+          <button class="btn-full modal__close" data-micromodal-close aria-label="Cerrar">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </body>
+  </html>

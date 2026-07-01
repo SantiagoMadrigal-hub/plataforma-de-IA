@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Historial de documentos en Lexora" />
+    <meta name="robots" content="noindex,nofollow" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/vendor/aos.css">
+    <link rel="stylesheet" href="../css/vendor/glide.core.min.css">
+
+    <link rel="stylesheet" href="/css/variables-globales.css">
+    <link rel="stylesheet" href="/css/estilos-globales.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/componentes.css">
+    <link rel="stylesheet" href="/css/secciones-especificas.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+    
+    <title>Historial - Lexora</title>
+</head>
+<body class="dark-theme">
+    
+    <script src="../js/vendor/iconify-icon.min.js"></script>
+    <script src="../js/vendor/micromodal.min.js"></script>
+    <script src="../js/vendor/glide.min.js"></script>
+    <script src="../js/vendor/aos.js"></script>
+        <script type="module" src="../js/main.js"></script>
+
+    <header class="app-header">
+        <div class="container-layout">
+            <div class="app-header-top">
+                <a href="dashboard.html" class="back-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    Volver al Dashboard
+                </a>
+            </div>
+            <div class="app-header-content">
+                <h1>Historial</h1>
+                <p>Consulta y administra todos los contenidos que has creado.</p>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container-layout history-container">
+        
+        <section class="history-panel">
+            
+            <form action="history.html" method="get" class="search-form">
+                <div class="form-group search-group">
+                    <input type="search" id="buscar" name="buscar" class="form-input" placeholder="Buscar documento..."> 
+                    <button type="submit">Buscar</button>
+                </div>
+            </form>
+
+            <div class="table-wrapper">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre del contenido</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>📄 Guion YouTube IA </td>
+                            <td>24/06/2026</td>
+                            <td class="table-actions">
+                                <a href="generador.html">Editar</a><span class="action-sep"></span><a href="#">Borrar</a><span class="action-sep"></span><a href="#">Descargar</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>📄 Artículo SEO</td>
+                            <td>23/06/2026</td>
+                            <td class="table-actions">
+                                <a href="generador.html">Editar</a><span class="action-sep"></span><a href="#">Borrar</a><span class="action-sep"></span><a href="#">Descargar</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>📄 Post Instagram </td>
+                            <td>22/06/2026</td>
+                            <td class="table-actions">
+                                <a href="generador.html">Editar</a><span class="action-sep"></span><a href="#">Borrar</a><span class="action-sep"></span><a href="#">Descargar</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+        </section>
+    </main>
+</body>
+</html>

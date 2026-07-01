@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Plataforma SaaS de generación de contenido con IA" />
+    <meta name="robots" content="index,follow" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/vendor/aos.css">
+    <link rel="stylesheet" href="../css/vendor/glide.core.min.css">
+
+    <link rel="stylesheet" href="/css/variables-globales.css">
+    <link rel="stylesheet" href="/css/estilos-globales.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/componentes.css">
+    <link rel="stylesheet" href="/css/secciones-especificas.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+
+    <title>Generador IA - Lexora</title>
+</head>
+<body class="dark-theme">
+
+    <script src="../js/vendor/iconify-icon.min.js"></script>
+    <script src="../js/vendor/micromodal.min.js"></script>
+    <script src="../js/vendor/glide.min.js"></script>
+    <script src="../js/vendor/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script type="module" src="../js/main.js"></script>
+
+
+    <header class="app-header">
+        <div class="container-layout">
+            <div class="app-header-top">
+                <a href="dashboard.html" class="back-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M19 12H5m7-7-7 7 7 7"/>
+                    </svg>
+                    Volver al Dashboard
+                </a>
+                <a href="#" class="logout-link">Cerrar Sesión</a>
+            </div>
+            <div class="app-header-content">
+                <h1>Generador IA</h1>
+                <p>Crea contenido profesional en segundos.</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="container-layout generator-container">
+        
+        <section class="generator-panel">
+            <h2>¿Qué quieres crear hoy?</h2>
+
+            <form action="dashboard.html" method="get" class="form" id="generator-form">
+                
+                <div class="form-group">
+                    <label for="idea" class="form-label">Describe tu idea</label>
+                    <textarea id="idea" name="idea" class="form-input" rows="6" placeholder="Ejemplo: Crea un guion de YouTube sobre productividad." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="tono" class="form-label">Tono</label>
+                    <select id="tono" name="tono" class="form-input">
+                        <option value="profesional">Profesional</option>
+                        <option value="divertido">Divertido</option>
+                        <option value="formal">Formal</option>
+                        <option value="creativo">Creativo</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="formato" class="form-label">Formato</label>
+                    <select name="formato" id="formato" class="form-input">
+                        <option value="instagram">Post para Instagram</option>
+                        <option value="blog">Artículo de blog</option>
+                        <option value="youtube">Guion de YouTube</option>
+                        <option value="email">Email</option>
+                        <option value="seo">Contenido SEO</option>
+                    </select>    
+                </div>
+            
+                <button type="submit" class="btn-full">Generar contenido</button>
+            </form>
+        </section>
+
+        <section class="results-panel">
+            <h2>Resultado Generado</h2>
+
+            <div class="empty-state" style="display:none;">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10 9 9 9 8 9"/>
+                </svg>
+                <p>Tu contenido generado aparecerá aquí</p>
+            </div>
+
+            <article class="output-box">
+                <span class="format-badge">Formato: Blog</span>
+                <h3>5 hábitos que aumentan tu productividad</h3>
+                <p>
+                    La productividad no consiste en trabajar más horas,
+                    sino en aprovechar mejor tu tiempo. Implementar hábitos
+                    sencillos puede ayudarte a conseguir mejores resultados
+                    y reducir el estrés diario.
+                </p>
+            </article>
+
+            <div class="action-block">
+                <h3>Acciones rápidas</h3>
+                <div class="action-buttons">
+                    <button type="button" class="btn-outline" data-action="copy">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        Copiar texto
+                    </button>
+                    <button type="button" class="btn-outline" data-action="pdf">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Descargar PDF
+                    </button>
+                    <button type="button" class="btn-outline" data-action="word">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Descargar Word
+                    </button>
+                    <button type="button" class="btn-outline" data-action="regenerate">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                        Regenerar
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,45 @@
+/* Contenedor general para dar margen y ancho máximo en las secciones */
+.navbar, 
+.container-layout {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+/* Macroestructura de la Barra de Navegación */
+.navbar {
+    display: flex;
+    align-items: center;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    background: var(--color-white);
+    border-bottom: 1px solid var(--color-border);
+}
+
+/* Enlace consistente "← Volver al Dashboard" */
+.back-link {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color var(--transition-fast);
+}
+
+.back-link svg {
+    flex-shrink: 0;
+}
+
+.back-link:hover {
+    color: var(--color-primary);
+}
+
+/* Macroestructura fija del Footer para todas las páginas (Protegido) */
+footer {
+    background-color: var(--color-text-primary);
+    color: var(--color-white);
+    padding: var(--space-16) 1.5rem;
+    margin-top: var(--space-16);
+    width: 100%;
+}
