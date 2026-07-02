@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const stored = await appState.settings.get();
   if (stored) {
     let changed = false;
-    if (!stored.groqKey && GROQ_API_KEY) {
+    if (!stored.groqKey && typeof GROQ_API_KEY !== 'undefined') {
       stored.groqKey = GROQ_API_KEY;
       changed = true;
     }
