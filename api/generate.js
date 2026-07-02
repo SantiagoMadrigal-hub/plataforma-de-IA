@@ -11,18 +11,18 @@
 //   GROQ_API_KEY=gsk_...
 
 const FORMAT_LABELS = {
-  instagram: 'Post para Instagram',
-  blog: 'Artículo de blog',
-  youtube: 'Guion de YouTube',
-  email: 'Email',
-  seo: 'Contenido SEO',
+  instagram: "Post para Instagram",
+  blog: "Artículo de blog",
+  youtube: "Guion de YouTube",
+  email: "Email",
+  seo: "Contenido SEO",
 };
 
 const TONE_DESC = {
-  profesional: 'profesional y corporativo',
-  divertido: 'divertido y cercano',
-  formal: 'formal y serio',
-  creativo: 'creativo e innovador',
+  profesional: "profesional y corporativo",
+  divertido: "divertido y cercano",
+  formal: "formal y serio",
+  creativo: "creativo e innovador",
 };
 
 const API_TIMEOUT_MS = 15_000;
@@ -33,8 +33,10 @@ async function fetchWithTimeout(url, options) {
   try {
     return await fetch(url, { ...options, signal: controller.signal });
   } catch (err) {
-    if (err.name === 'AbortError') {
-      throw new Error(`La solicitud a Groq tardó más de ${API_TIMEOUT_MS / 1000}s y fue cancelada.`);
+    if (err.name === "AbortError") {
+      throw new Error(
+        `La solicitud a Groq tardó más de ${API_TIMEOUT_MS / 1000}s y fue cancelada.`,
+      );
     }
     throw err;
   } finally {
@@ -43,63 +45,85 @@ async function fetchWithTimeout(url, options) {
 }
 
 module.exports = async function handler(req, res) {
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    return res.status(405).json({ error: 'Método no permitido. Usa POST.' });
+  if (req.method !== "POST") {
+    res.setHeader("Allow", "POST");
+    return res.status(405).json({ error: "Método no permitido. Usa POST." });
   }
 
   const { prompt, tone, format } = req.body || {};
 
-  if (!prompt || typeof prompt !== 'string' || !prompt.trim()) {
+  if (!prompt || typeof prompt !== "string" || !prompt.trim()) {
     return res.status(400).json({ error: 'El campo "prompt" es requerido.' });
   }
-  if (!format || typeof format !== 'string') {
+  if (!format || typeof format !== "string") {
     return res.status(400).json({ error: 'El campo "format" es requerido.' });
   }
 
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    console.error('GROQ_API_KEY no está configurada en las variables de entorno del servidor.');
-    return res.status(500).json({ error: 'El servicio de IA no está configurado en el servidor.' });
+    console.error(
+      "GROQ_API_KEY no está configurada en las variables de entorno del servidor.",
+    );
+    return res
+      .status(500)
+      .json({ error: "El servicio de IA no está configurado en el servidor." });
   }
 
   try {
-    const response = await fetchWithTimeout('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
+    const response = await fetchWithTimeout(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            {
+              role: "system",
+              content: `Eres un redactor experto. Genera contenido en formato ${FORMAT_LABELS[format] || format} con tono ${TONE_DESC[tone] || tone}.
+
+Reglas de formato (Markdown obligatorio, sin excepción):
+- Toda lista con viñetas debe usar "- " al inicio de cada línea.
+- Toda lista numerada debe usar "1. ", "2. ", "3. ", etc., de forma secuencial (nunca repitas "1." en cada ítem).
+- Usa "**texto**" para resaltar términos o frases clave.
+- Usa "## " para subtítulos de sección si el formato lo amerita.
+- No escribas listas como líneas sueltas sin marcador: cada ítem de una lista SIEMPRE debe empezar con "- " o con su número.
+
+Devuelve solo el contenido, sin explicaciones ni metadatos.`,
+            },
+            { role: "user", content: prompt },
+          ],
+          temperature: 0.7,
+          max_tokens: 2000,
+        }),
       },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: [
-          {
-            role: 'system',
-            content: `Eres un redactor experto. Genera contenido en formato ${FORMAT_LABELS[format] || format} con tono ${TONE_DESC[tone] || tone}. Devuelve solo el contenido, sin explicaciones ni metadatos.`,
-          },
-          { role: 'user', content: prompt },
-        ],
-        temperature: 0.7,
-        max_tokens: 2000,
-      }),
-    });
+    );
 
     if (!response.ok) {
       const errText = await response.text();
       console.error(`Groq error (${response.status}):`, errText);
-      return res.status(502).json({ error: 'La IA no pudo generar el contenido en este momento.' });
+      return res
+        .status(502)
+        .json({ error: "La IA no pudo generar el contenido en este momento." });
     }
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content?.trim();
 
     if (!content) {
-      return res.status(502).json({ error: 'Respuesta vacía del proveedor de IA.' });
+      return res
+        .status(502)
+        .json({ error: "Respuesta vacía del proveedor de IA." });
     }
 
     return res.status(200).json({ content });
   } catch (err) {
-    console.error('Error llamando a Groq:', err);
-    return res.status(502).json({ error: err.message || 'Error al contactar el servicio de IA.' });
+    console.error("Error llamando a Groq:", err);
+    return res
+      .status(502)
+      .json({ error: err.message || "Error al contactar el servicio de IA." });
   }
 };
