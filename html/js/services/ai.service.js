@@ -3,28 +3,29 @@ const TONE_DESC = { profesional: 'profesional y corporativo', divertido: 'divert
 
 const API_TIMEOUT_MS = 15_000;
 
+// El generador ya no llama a Groq/OpenAI directamente desde el navegador
+// (eso exponía la API key a quien viera el código fuente). En su lugar,
+// le pide el contenido a nuestra propia función serverless, que es la
+// única que conoce la key real (guardada como variable de entorno del
+// servidor). Ver /api/generate.js.
+const AI_PROXY_ENDPOINT = '/api/generate';
+
 export class AIService {
     constructor(settingsRepository, documentService) {
+        // settingsRepository se mantiene por compatibilidad con quien
+        // instancia este servicio (main.js), aunque ya no se usa para
+        // leer API keys: esas ya no viven en el cliente.
         this.settingsRepo = settingsRepository;
         this.docService = documentService;
     }
 
     async generate(prompt, tone, format) {
-        const settings = await this.settingsRepo.get();
-
-        for (const provider of ['openai', 'groq']) {
-            const key = settings?.[`${provider}Key`];
-            if (!key) continue;
-            try {
-                return provider === 'openai'
-                    ? await this.callOpenAI(prompt, tone, format, key)
-                    : await this.callGroq(prompt, tone, format, key);
-            } catch (e) {
-                console.warn(`${provider} falló:`, e.message);
-            }
+        try {
+            return await this.callProxy(prompt, tone, format);
+        } catch (e) {
+            console.warn('El servicio de IA no está disponible, usando contenido de demostración:', e.message);
+            return this.mockGenerate(prompt, tone, format);
         }
-
-        return this.mockGenerate(prompt, tone, format);
     }
 
     async save(prompt, content, format) {
@@ -74,51 +75,19 @@ export class AIService {
         return templates[format] || `[CONTENIDO SIMULADO]\n\nTema: ${topic}\nTono: ${toneStr}\nFormato: ${label}\n\nEste contenido de prueba demuestra el flujo de la aplicación. En producción, aquí se mostraría el resultado real de la IA.\n\n¡La arquitectura está lista para conectar con OpenAI, Claude o Gemini cuando tengas una API key válida!`;
     }
 
-    async callOpenAI(prompt, tone, format, apiKey) {
-        const response = await this._fetchWithTimeout('https://api.openai.com/v1/chat/completions', {
+    async callProxy(prompt, tone, format) {
+        const response = await this._fetchWithTimeout(AI_PROXY_ENDPOINT, {
             method: 'POST',
-            headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                model: 'gpt-4o-mini',
-                messages: [
-                    { role: 'system', content: `Eres un redactor experto. Genera contenido en formato ${FORMAT_LABELS[format] || format} con tono ${TONE_DESC[tone] || tone}. Devuelve solo el contenido, sin explicaciones ni metadatos.` },
-                    { role: 'user', content: prompt }
-                ],
-                temperature: 0.7,
-                max_tokens: 2000
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt, tone, format })
         });
 
         if (!response.ok) {
             const err = await response.text();
-            throw new Error(`OpenAI error (${response.status}): ${err}`);
+            throw new Error(`Proxy de IA error (${response.status}): ${err}`);
         }
 
         const data = await response.json();
-        return data.choices[0].message.content.trim();
-    }
-
-    async callGroq(prompt, tone, format, apiKey) {
-        const response = await this._fetchWithTimeout('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                model: 'llama-3.3-70b-versatile',
-                messages: [
-                    { role: 'system', content: `Eres un redactor experto. Genera contenido en formato ${FORMAT_LABELS[format] || format} con tono ${TONE_DESC[tone] || tone}. Devuelve solo el contenido, sin explicaciones ni metadatos.` },
-                    { role: 'user', content: prompt }
-                ],
-                temperature: 0.7,
-                max_tokens: 2000
-            })
-        });
-
-        if (!response.ok) {
-            const err = await response.text();
-            throw new Error(`Groq error (${response.status}): ${err}`);
-        }
-
-        const data = await response.json();
-        return data.choices[0].message.content.trim();
+        return data.content;
     }
 }
