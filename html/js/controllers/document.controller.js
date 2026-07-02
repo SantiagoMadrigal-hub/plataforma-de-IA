@@ -10,24 +10,28 @@ function escapeHtml(str) {
 // (ver ai.service.js -> save()), así que casi siempre esa primera línea
 // queda duplicada dentro del cuerpo. La quitamos antes de renderizar.
 function stripDuplicateTitle(content, title) {
-  const lines = content.split("\n");
-  const firstIdx = lines.findIndex((l) => l.trim().length > 0);
-  if (firstIdx === -1) return content;
-
-  const firstLineClean = lines[firstIdx]
-    .replace(/^[#*\s]+/, "")
-    .replace(/[*\s]+$/, "")
-    .trim();
   const titleClean = title.replace(/…$/, "").trim();
+  const lines = content.split("\n");
 
-  if (
-    firstLineClean === title.trim() ||
-    firstLineClean.startsWith(titleClean)
-  ) {
-    lines.splice(firstIdx, 1);
-    return lines.join("\n");
+  while (true) {
+    const firstIdx = lines.findIndex((l) => l.trim().length > 0);
+    if (firstIdx === -1) break;
+
+    const firstLineClean = lines[firstIdx]
+      .replace(/^[#*\s]+/, "")
+      .replace(/[*\s]+$/, "")
+      .trim();
+
+    if (
+      firstLineClean === titleClean ||
+      firstLineClean.startsWith(titleClean)
+    ) {
+      lines.splice(firstIdx, 1);
+    } else {
+      break;
+    }
   }
-  return content;
+  return lines.join("\n");
 }
 
 // Convierte el Markdown que devuelve la IA (títulos con #, **negritas**,
@@ -57,8 +61,11 @@ function renderMarkdown(text) {
   for (const rawLine of lines) {
     const line = rawLine.trim();
 
+    // Una línea en blanco NO cierra una lista por sí sola: Groq suele
+    // separar cada ítem con una línea vacía, y si cerráramos la lista
+    // aquí, cada ítem quedaría como su propia lista reiniciando en 1.
+    // La lista solo se cierra cuando aparece un bloque de otro tipo.
     if (line === "") {
-      closeList();
       continue;
     }
 
