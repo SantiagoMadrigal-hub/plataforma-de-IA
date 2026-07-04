@@ -72,46 +72,55 @@ export const FormController = {
     },
 
     _initGoogleButtons: function () {
-        // Esperar a que el SDK de Google esté listo
-        if (typeof google === 'undefined' || !google.accounts) {
-            window.addEventListener('google-sdk-ready', () => this._initGoogleButtons());
-            return;
-        }
-
-        google.accounts.id.initialize({
-            client_id: GOOGLE_CLIENT_ID,
-            callback: async (response) => {
-                try {
-                    // Decodificar el JWT que Google devuelve
-                    const payload = JSON.parse(atob(response.credential.split('.')[1]));
-                    const googleUser = {
-                        id:         payload.sub,
-                        name:       payload.name,
-                        email:      payload.email,
-                        avatar_url: payload.picture
-                    };
-                    await window.ContentFlowApp.services.auth.loginWithGoogle(googleUser);
-                    window.location.href = 'dashboard.html';
-                } catch (err) {
-                    console.error('Error Google Sign-In:', err);
-                    const errEl = document.querySelector('.form-error-google');
-                    if (errEl) errEl.textContent = 'No se pudo iniciar sesión con Google.';
+        this._loadGoogleSdk(function () {
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: async (response) => {
+                    try {
+                        const payload = JSON.parse(atob(response.credential.split('.')[1]));
+                        const googleUser = {
+                            id:         payload.sub,
+                            name:       payload.name,
+                            email:      payload.email,
+                            avatar_url: payload.picture
+                        };
+                        await window.ContentFlowApp.services.auth.loginWithGoogle(googleUser);
+                        window.location.href = 'dashboard.html';
+                    } catch (err) {
+                        console.error('Error Google Sign-In:', err);
+                        const errEl = document.querySelector('.form-error-google');
+                        if (errEl) errEl.textContent = 'No se pudo iniciar sesión con Google.';
+                    }
                 }
-            }
-        });
+            });
 
-        // Renderizar botones en login y signup
-        const targets = document.querySelectorAll('.google-signin-btn');
-        targets.forEach(target => {
-            google.accounts.id.renderButton(target, {
-                type:  'standard',
-                theme: 'filled_black',
-                size:  'large',
-                text:  target.dataset.text || 'signin_with',
-                shape: 'rectangular',
-                width: target.offsetWidth || 320,
-                logo_alignment: 'left'
+            const targets = document.querySelectorAll('.google-signin-btn');
+            targets.forEach(function (target) {
+                google.accounts.id.renderButton(target, {
+                    type:  'standard',
+                    theme: 'filled_black',
+                    size:  'large',
+                    text:  target.dataset.text || 'signin_with',
+                    shape: 'rectangular',
+                    width: target.offsetWidth || 320,
+                    logo_alignment: 'left'
+                });
             });
         });
+    },
+
+    _loadGoogleSdk: function (callback) {
+        if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+            callback();
+            return;
+        }
+        var script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.onload = callback;
+        script.onerror = function () {
+            console.error('Error al cargar el SDK de Google. Reintentando en 2s...');
+            setTimeout(function () { FormController._loadGoogleSdk(callback); }, 2000);
+        };
+        document.head.appendChild(script);
     }
 };
