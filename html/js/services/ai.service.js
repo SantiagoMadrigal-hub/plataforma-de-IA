@@ -19,6 +19,8 @@ const API_TIMEOUT_MS = 15_000;
 // le pide el contenido a nuestra propia función serverless, que es la
 // única que conoce la key real (guardada como variable de entorno del
 // servidor). Ver /api/generate.js.
+import { api } from './http.js';
+
 const AI_PROXY_ENDPOINT = "/api/generate";
 
 export class AIService {
@@ -109,18 +111,7 @@ export class AIService {
   }
 
   async callProxy(prompt, tone, format) {
-    const response = await this._fetchWithTimeout(AI_PROXY_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt, tone, format }),
-    });
-
-    if (!response.ok) {
-      const err = await response.text();
-      throw new Error(`Proxy de IA error (${response.status}): ${err}`);
-    }
-
-    const data = await response.json();
+    const data = await api('POST', AI_PROXY_ENDPOINT, { prompt, tone, format });
     return data.content;
   }
 }

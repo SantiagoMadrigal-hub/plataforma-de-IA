@@ -7,29 +7,15 @@ import { FormController } from "./controllers/form.controller.js";
 import { AuthController } from "./controllers/auth.controller.js";
 import { DocumentController } from "./controllers/document.controller.js";
 import { SettingsController } from "./controllers/SettingsController.js";
-// react-bridge.js se importa dinámicamente dentro del handler (ver más abajo)
-
-// Para migrar a Supabase:
-// 1. Crea una tabla 'app_data' con columnas key (TEXT PK) y value (JSONB)
-// 2. Reemplaza la línea de abajo con:
-//    const storage = new SupabaseAdapter('https://tu-proyecto.supabase.co', 'tu-anon-key');
-// 3. Importa SupabaseAdapter arriba:
-//    import { SupabaseAdapter, LocalStorageAdapter } from './services/storage.adapter.js';
 
 document.addEventListener("DOMContentLoaded", async function () {
   const storage = new LocalStorageAdapter();
 
   const appState = {
-    auth: new Repository(storage, "contentflow.auth"),
-    documents: new Repository(storage, "contentflow.documents"),
     settings: new Repository(storage, "contentflow.settings"),
   };
 
-  await Promise.all([
-    appState.auth.init(),
-    appState.documents.init(),
-    appState.settings.init(),
-  ]);
+  await appState.settings.init();
 
   const stored = await appState.settings.get();
   if (stored) {
@@ -41,17 +27,19 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (changed) await appState.settings.set(stored);
   }
 
-  const docService = new DocumentService(appState.documents);
+  const authService = new AuthService();
+  const docService = new DocumentService();
+
+  await authService.init();
 
   const services = {
-    auth: new AuthService(appState.auth),
+    auth: authService,
     documents: docService,
     ai: new AIService(appState.settings, docService),
   };
 
   window.ContentFlowApp = { state: appState, services: services };
 
-  // Cargar React después de que ContentFlowApp está listo
   import("../js/react-bridge.js").catch(function (err) {
     console.error("Error al cargar React:", err);
   });
@@ -88,6 +76,5 @@ document.addEventListener("DOMContentLoaded", async function () {
     },
   });
 
-  // React se auto-inicializa via react-bridge.js (import arriba)
-  console.log("Motor de React listo.");
+  console.log("App inicializada con backend API.");
 });
