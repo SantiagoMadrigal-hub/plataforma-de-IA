@@ -37,61 +37,6 @@
       tener que tocar layout.css y arriesgar romper otras páginas.
     -->
     <style>
-      :root {
-        --lex-bg: #151521;
-        --lex-card-bg: #1e1e2d;
-        --lex-border: #2a2a3c;
-        --lex-text: #ffffff;
-        --lex-muted: #a1a1aa;
-        --lex-accent: #6366f1;
-      }
-
-      body.dark-theme {
-        background-color: var(--lex-bg);
-      }
-
-      .app-header {
-        background-color: var(--lex-card-bg);
-        border-bottom: 1px solid var(--lex-border);
-        padding: 20px 0 24px;
-      }
-
-      .app-header-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-      }
-
-      .app-header .back-link,
-      .app-header .logout-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        color: var(--lex-muted);
-        text-decoration: none;
-        font-size: 14px;
-        transition: color 0.2s ease;
-      }
-
-      .app-header .back-link:hover,
-      .app-header .logout-btn:hover {
-        color: var(--lex-text);
-      }
-
-      .app-header-content h1 {
-        color: var(--lex-text);
-        font-size: 26px;
-        font-weight: 700;
-        margin: 0 0 6px;
-      }
-
-      .app-header-content p {
-        color: var(--lex-muted);
-        font-size: 14px;
-        margin: 0;
-      }
-
       /* El ajuste clave: ancho suficiente para que el grid de 2
          columnas de las tarjetas del perfil respire de verdad. */
       .profile-container {
@@ -121,34 +66,29 @@
     <header class="app-header">
       <div class="container-layout">
         <div class="app-header-top">
-          <a href="index.html" class="back-link" title="Ir al inicio">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-              <polyline points="9 22 9 12 15 12 15 22"/>
-            </svg>
-          </a>
-          <a href="dashboard.html" class="back-link">← Volver al Dashboard</a>
-          <a href="#" class="logout-btn">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
-            Cerrar Sesión
-          </a>
+          <div class="header-left">
+            <a href="dashboard.html" class="header-logo">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              Lexora
+            </a>
+            <span class="breadcrumb-sep">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </span>
+            <span class="breadcrumb-current">Perfil</span>
+          </div>
+          <div class="header-right">
+            <a href="profile.html" class="avatar-link" title="Perfil">
+              <span class="avatar-fallback">U</span>
+            </a>
+            <a href="#" class="logout-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              <span class="logout-text">Cerrar Sesión</span>
+            </a>
+          </div>
         </div>
         <div class="app-header-content">
           <h1>Mi perfil</h1>
-          <p>
+          <p class="header-subtitle">
             Administra tu información personal y mantén tus datos actualizados
           </p>
         </div>

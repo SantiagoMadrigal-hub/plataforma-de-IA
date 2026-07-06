@@ -84,11 +84,10 @@
     font-size: 1.625rem;
   }
 
-  /* La navegación superior se apila en pantallas estrechas */
+  /* La navegación superior se mantiene horizontal pero los grupos se separan */
   .app-header-top {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
+    flex-wrap: wrap;
+    row-gap: 0.75rem;
   }
 
   /* El layout del generador pasa de 2 columnas a 1 sola en móviles */

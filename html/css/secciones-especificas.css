@@ -750,6 +750,91 @@ footer h3, footer p {
   border-bottom: 1px solid var(--color-border);
 }
 
+/* Left/Right grouping for header */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Brand wordmark in header */
+.header-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: -0.03em;
+  transition: color var(--transition-fast);
+}
+
+.header-logo:hover {
+  color: var(--color-primary);
+}
+
+.header-logo svg {
+  flex-shrink: 0;
+}
+
+/* Breadcrumb separator and current page */
+.breadcrumb-sep {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text-tertiary);
+}
+
+.breadcrumb-sep svg {
+  display: block;
+}
+
+.breadcrumb-current {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+/* Avatar circle in header */
+.avatar-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: opacity var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.avatar-link:hover {
+  opacity: 0.85;
+  color: #fff;
+}
+
+.avatar-fallback {
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* Responsive: hide logout text on narrow screens */
+@media (max-width: 480px) {
+  .logout-text {
+    display: none;
+  }
+}
+
 .app-header-content {
   max-width: 640px;
 }
@@ -946,6 +1031,11 @@ footer h3, footer p {
 /* ==========================================================================
    --- PÁGINA: SETTINGS / CONFIGURACIÓN ---
    ========================================================================== */
+
+/* Alinear el ancho del header con el contenido de settings */
+.page-settings .app-header .container-layout {
+  max-width: 800px;
+}
 
 /* Contenedor principal: Limitamos el ancho para que no se vea desproporcionado en pantallas gigantes */
 .settings-container {
@@ -1490,6 +1580,15 @@ body.dark-theme {
   color: #c4c4c7;
 }
 
+/* Header subtitle con mejor contraste en light mode */
+.app-header .header-subtitle {
+  color: #4B5563;
+}
+
+.dark-theme .app-header .header-subtitle {
+  color: #c4c4c7;
+}
+
 .dark-theme .app-header-top {
   border-bottom-color: #222;
 }
@@ -1513,13 +1612,30 @@ body.dark-theme {
 .dark-theme .logout-btn {
   color: #a1a1aa;
   border-color: rgba(255, 255, 255, 0.12);
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 .dark-theme .logout-btn:hover {
   color: #ef4444;
   border-color: rgba(239, 68, 68, 0.3);
   background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* Dark theme overrides for new header elements */
+.dark-theme .header-logo {
+  color: #f4f4f5;
+}
+
+.dark-theme .header-logo:hover {
+  color: #818cf8;
+}
+
+.dark-theme .breadcrumb-sep {
+  color: #52525b;
+}
+
+.dark-theme .breadcrumb-current {
+  color: #a1a1aa;
 }
 
 /* --- Dashboard layout --- */
