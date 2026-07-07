@@ -784,7 +784,7 @@ footer h3, footer p {
 .breadcrumb-sep {
   display: inline-flex;
   align-items: center;
-  color: var(--color-text-tertiary);
+  color: #d1d5db;
 }
 
 .breadcrumb-sep svg {
@@ -826,6 +826,12 @@ footer h3, footer p {
   color: inherit;
   box-shadow: none;
   width: auto;
+}
+
+.user-menu-trigger:hover .avatar-fallback,
+.user-menu-trigger:focus-visible .avatar-fallback {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .user-menu-trigger:hover {
@@ -1796,7 +1802,7 @@ body.dark-theme {
 }
 
 .dark-theme .breadcrumb-sep {
-  color: #3f3f46;
+  color: #52525b;
 }
 
 .dark-theme .breadcrumb-link {
