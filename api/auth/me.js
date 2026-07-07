@@ -13,11 +13,14 @@ async function getHandler(req, res) {
   const db = getDb();
 
   const { data: user, error } = await db.from('users')
-    .select('id, email, name, plan, avatar_url, created_at')
+    .select('id, email, name, plan, avatar_url, created_at, password_hash')
     .eq('id', req.user.id)
     .single();
 
   if (error) throw error;
+
+  const authProvider = user.password_hash === 'google_oauth' ? 'google' : 'email';
+  delete user.password_hash;
 
   const today = new Date().toISOString().slice(0, 10);
   const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
@@ -55,6 +58,7 @@ async function getHandler(req, res) {
     name: user.name,
     plan: user.plan,
     avatar_url: user.avatar_url,
+    authProvider,
     stats: {
       credits: creditsRemaining,
       creditsLimit: dailyLimit,

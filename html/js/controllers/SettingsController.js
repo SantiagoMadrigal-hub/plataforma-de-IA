@@ -30,6 +30,7 @@ export const SettingsController = {
             if (!profile) return;
 
             const stats = profile.stats || {};
+            this._authProvider = profile.authProvider || 'email';
 
             const planEl = document.querySelector('.stat-card--plan .stat-value');
             if (planEl) planEl.textContent = profile.plan || 'Pro';
@@ -59,6 +60,11 @@ export const SettingsController = {
             var emailInput = document.querySelector('#correo');
             if (emailInput && profile.email) {
                 emailInput.value = profile.email;
+            }
+
+            var pwGroup = document.getElementById('delete-pw-group');
+            if (pwGroup) {
+                pwGroup.style.display = this._authProvider === 'google' ? 'none' : '';
             }
         } catch (err) {
             console.error('Error al cargar estadísticas:', err);
@@ -359,7 +365,7 @@ export const SettingsController = {
 
         confirmBtn.addEventListener('click', async function () {
             if (this.disabled) return;
-            if (confirmPw && !confirmPw.value.trim()) {
+            if (self._authProvider !== 'google' && confirmPw && !confirmPw.value.trim()) {
                 confirmPw.classList.add('is-error');
                 confirmPw.focus();
                 self._showToast('Ingresa tu contraseña para eliminar la cuenta', 'error');
