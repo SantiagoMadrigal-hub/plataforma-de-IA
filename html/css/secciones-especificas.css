@@ -2342,6 +2342,35 @@ body.dark-theme {
 /* --- Delete confirmation modal --- */
 .modal__container--danger {
   text-align: center;
+  position: relative;
+}
+
+.modal-x-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: none;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  box-shadow: none;
+}
+
+.modal-x-close:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--color-text-primary);
+}
+
+.dark-theme .modal-x-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e4e4e7;
 }
 
 .modal-danger-icon {
