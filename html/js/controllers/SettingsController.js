@@ -281,6 +281,7 @@ export const SettingsController = {
             reset();
             modal.classList.add('is-open');
             modal.setAttribute('aria-hidden', 'false');
+            setTimeout(function () { confirmInput.focus(); }, 100);
         }
 
         function hide() {
@@ -308,6 +309,9 @@ export const SettingsController = {
                 self._showToast('Ingresa tu contraseña para eliminar la cuenta', 'error');
                 return;
             }
+            var textSpan = this.querySelector('.btn-text');
+            var origText = textSpan ? textSpan.textContent : '';
+            if (textSpan) textSpan.textContent = 'Eliminando...';
             this.disabled = true;
             this.classList.add('btn-loading');
 
@@ -318,6 +322,7 @@ export const SettingsController = {
             } catch (err) {
                 self._showToast(err.message || 'Error al eliminar', 'error');
             } finally {
+                if (textSpan) textSpan.textContent = origText;
                 this.disabled = false;
                 this.classList.remove('btn-loading');
                 reset();
