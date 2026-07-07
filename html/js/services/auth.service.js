@@ -56,6 +56,14 @@ export class AuthService {
     return data;
   }
 
+  async deleteAccount(password) {
+    const body = password ? { password } : {};
+    const data = await api('DELETE', '/api/auth/account', body);
+    setToken(null);
+    setUser(null);
+    return data;
+  }
+
   async isAuthenticated() {
     if (getUser()) return true;
     const ok = await attemptRefresh();

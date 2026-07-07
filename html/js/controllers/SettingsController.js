@@ -378,12 +378,14 @@ export const SettingsController = {
             this.classList.add('btn-loading');
 
             try {
-                await new Promise(function (r) { setTimeout(r, 1200); });
-                self._showToast('Cuenta eliminada (simulado)', 'info');
-                hide();
+                var body = {};
+                if (self._authProvider !== 'google' && confirmPw) {
+                    body.password = confirmPw.value.trim();
+                }
+                await window.ContentFlowApp.services.auth.deleteAccount(body.password);
+                window.location.href = 'index.html';
             } catch (err) {
-                self._showToast(err.message || 'Error al eliminar', 'error');
-            } finally {
+                self._showToast(err.message || 'Error al eliminar la cuenta', 'error');
                 if (textSpan) textSpan.textContent = origText;
                 this.disabled = false;
                 this.classList.remove('btn-loading');
