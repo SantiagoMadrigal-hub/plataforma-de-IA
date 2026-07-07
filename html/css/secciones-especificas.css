@@ -2541,7 +2541,6 @@ body.dark-theme {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   overflow: hidden;
   max-height: 280px;
-  display: flex;
   flex-direction: column;
 }
 
