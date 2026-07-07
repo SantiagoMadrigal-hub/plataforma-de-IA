@@ -80,9 +80,31 @@ export const SmartDocumentList = () => {
         ))}
 
         {status === 'ready' && filteredDocs.length === 0 && (
-          <p style={{ color: '#a1a1aa' }}>
-            {allDocs.length === 0 ? 'Aún no has generado documentos.' : 'No se encontraron resultados.'}
-          </p>
+          allDocs.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '48px 20px' }}>
+              <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '16px', opacity: 0.5 }}>
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="12" y1="18" x2="12" y2="12" />
+                <line x1="9" y1="15" x2="15" y2="15" />
+                <path d="M9 4h2" opacity="0.5" />
+              </svg>
+              <p style={{ color: '#a1a1aa', margin: '0 0 20px', fontSize: '14px' }}>Aún no has generado documentos.</p>
+              <a href="generador.html" style={{
+                display: 'inline-flex', alignItems: 'center', gap: '8px',
+                padding: '10px 22px', borderRadius: '8px',
+                background: 'transparent', border: '1px solid #4f46e5', color: '#818cf8',
+                textDecoration: 'none', fontSize: '14px', fontWeight: '500',
+                transition: 'all 0.2s'
+              }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#4f46e5'; e.currentTarget.style.color = '#fff' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#818cf8' }}>
+                Genera tu primer documento →
+              </a>
+            </div>
+          ) : (
+            <p style={{ color: '#a1a1aa' }}>No se encontraron resultados.</p>
+          )
         )}
       </div>
     </div>

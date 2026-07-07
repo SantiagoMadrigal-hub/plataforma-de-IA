@@ -10,3 +10,6 @@ dist-ssr/
 
 .vercel
 .env*
+
+# Vite build output to root /js/
+/js/
