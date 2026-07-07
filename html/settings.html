@@ -132,21 +132,51 @@
                 
                 <div class="form-group">
                     <label for="current-password" class="form-label">Contraseña actual</label>
-                    <input type="password" id="current-password" name="currentPassword" class="form-input" placeholder="Ingresa tu contraseña actual" required>
+                    <div class="input-wrapper">
+                        <input type="password" id="current-password" name="currentPassword" class="form-input" placeholder="Ingresa tu contraseña actual" required>
+                        <button type="button" class="password-toggle" data-toggle="current-password" aria-label="Mostrar contraseña">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="new-password" class="form-label">Nueva contraseña</label>
-                    <input type="password" id="new-password" name="newPassword" class="form-input" placeholder="Mínimo 8 caracteres" required>
+                    <div class="input-wrapper">
+                        <input type="password" id="new-password" name="newPassword" class="form-input" placeholder="Mínimo 8 caracteres" required>
+                        <button type="button" class="password-toggle" data-toggle="new-password" aria-label="Mostrar contraseña">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="confirm-password" class="form-label">Confirmar nueva contraseña</label>
-                    <input type="password" id="confirm-password" name="confirmPassword" class="form-input" placeholder="Repite la nueva contraseña" required>
+                    <div class="input-wrapper">
+                        <input type="password" id="confirm-password" name="confirmPassword" class="form-input" placeholder="Repite la nueva contraseña" required>
+                        <button type="button" class="password-toggle" data-toggle="confirm-password" aria-label="Mostrar contraseña">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-full">Actualizar Contraseña</button>
             </form>
+        </section>
+
+        <section class="settings-panel panel-danger">
+            <h2>Zona de riesgo</h2>
+            <p class="danger-desc">Estas acciones son irreversibles. Ten cuidado.</p>
+            <div class="danger-actions">
+                <button type="button" class="btn-danger">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Exportar mis datos
+                </button>
+                <button type="button" class="btn-danger btn-danger--delete">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    Eliminar cuenta
+                </button>
+            </div>
         </section>
         
     </main>
