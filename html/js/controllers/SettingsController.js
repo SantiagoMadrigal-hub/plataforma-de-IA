@@ -27,27 +27,38 @@ export const SettingsController = {
     _loadStats: async function () {
         try {
             const profile = await window.ContentFlowApp.services.auth.getUserProfile();
-            if (!profile?.stats) return;
+            if (!profile) return;
 
-            const stats = profile.stats;
+            const stats = profile.stats || {};
 
             const planEl = document.querySelector('.stat-card--plan .stat-value');
             if (planEl) planEl.textContent = profile.plan || 'Pro';
 
             const creditsEl = document.querySelector('.stat-card--credits .stat-value');
             if (creditsEl) {
-                creditsEl.innerHTML = stats.credits + ' <span class="stat-total">/ ' + stats.creditsLimit + '</span>';
+                creditsEl.innerHTML = (stats.credits ?? 0) + ' <span class="stat-total">/ ' + (stats.creditsLimit ?? 100) + '</span>';
             }
 
             const barFill = document.querySelector('.credits-bar-fill');
             if (barFill) {
-                var pct = Math.min(100, Math.round((stats.credits / stats.creditsLimit) * 100));
+                var limit = stats.creditsLimit ?? 100;
+                var pct = limit > 0 ? Math.min(100, Math.round(((stats.credits ?? 0) / limit) * 100)) : 0;
                 barFill.style.width = pct + '%';
             }
 
             const dateEl = document.querySelector('.stat-card--date .stat-value');
             if (dateEl && stats.renewalDate) {
                 dateEl.textContent = new Date(stats.renewalDate).toLocaleDateString('es-ES');
+            }
+
+            var nameInput = document.querySelector('#nombre');
+            if (nameInput && profile.name) {
+                nameInput.value = profile.name;
+            }
+
+            var emailInput = document.querySelector('#correo');
+            if (emailInput && profile.email) {
+                emailInput.value = profile.email;
             }
         } catch (err) {
             console.error('Error al cargar estadísticas:', err);

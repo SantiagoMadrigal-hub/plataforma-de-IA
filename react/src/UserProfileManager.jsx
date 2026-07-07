@@ -53,21 +53,25 @@ const UserProfileManager = () => {
           return;
         }
 
-        const user = await app.services.auth.getCurrentUser();
+        const profile = await app.services.auth.getUserProfile();
+        const user = profile || await app.services.auth.getCurrentUser();
         const docs = await app.services.documents.getAll();
         const docList = Array.isArray(docs) ? docs : [];
 
         const name = user?.name || 'Usuario';
         const initials = getInitials(name) || 'U';
+        const stats = user?.stats || {};
 
         setUserData({
           name: user?.name || '',
           email: user?.email || '',
           initials,
           plan: user?.plan || 'Pro',
-          credits: 87,
-          creditsLimit: 100,
-          renewalDate: '24/07/2026',
+          credits: stats.credits ?? 87,
+          creditsLimit: stats.creditsLimit ?? 100,
+          renewalDate: stats.renewalDate
+            ? new Date(stats.renewalDate).toLocaleDateString('es-ES')
+            : '24/07/2026',
           avatar: user?.avatar_url || null,
           completionPercentage: 65,
           memberSince: '—',
@@ -80,11 +84,11 @@ const UserProfileManager = () => {
             productUpdates: false,
           },
           usageStats: {
-            documentsThisMonth: docList.length,
-            aiTokensUsed: 28400,
-            aiTokensLimit: 100000,
-            storageUsed: 256,
-            storageLimit: 1024,
+            documentsThisMonth: stats.documentsThisMonth ?? docList.length,
+            aiTokensUsed: stats.aiTokensUsed ?? 28400,
+            aiTokensLimit: stats.aiTokensLimit ?? 100000,
+            storageUsed: stats.storageUsed ?? 256,
+            storageLimit: stats.storageLimit ?? 1024,
           },
         });
       } catch (err) {
