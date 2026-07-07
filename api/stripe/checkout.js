@@ -1,14 +1,25 @@
 import Stripe from 'stripe';
 import jwt from 'jsonwebtoken';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripeKey = (process.env.STRIPE_SECRET_KEY || '').trim();
+const stripe = new Stripe(stripeKey);
 
 const PLAN_MAP = {
-  pro: process.env.STRIPE_PRICE_PRO,
-  business: process.env.STRIPE_PRICE_BUSINESS,
+  pro: (process.env.STRIPE_PRICE_PRO || '').trim(),
+  business: (process.env.STRIPE_PRICE_BUSINESS || '').trim(),
 };
 
 export default async function handler(req, res) {
+  if (req.query?.test === '1') {
+    const key = process.env.STRIPE_SECRET_KEY || '';
+    const keyOk = key.startsWith('sk_test_') || key.startsWith('sk_live_');
+    return res.status(200).json({
+      key_length: key.length,
+      key_prefix: key.substring(0, 27) + '...',
+      key_ok: keyOk,
+    });
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }

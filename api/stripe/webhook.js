@@ -1,9 +1,9 @@
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = new Stripe((process.env.STRIPE_SECRET_KEY || '').trim());
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
-const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+const endpointSecret = (process.env.STRIPE_WEBHOOK_SECRET || '').trim();
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
