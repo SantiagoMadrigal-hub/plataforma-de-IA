@@ -33,7 +33,7 @@ export default async function handler(req, res) {
   }
 
   const priceId = PLAN_MAP[plan];
-  const origin = req.headers.origin || 'https://contentflow.vercel.app';
+  const origin = req.headers.origin || `https://${req.headers.host || 'plataforma-de-ia-ten.vercel.app'}`;
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -47,6 +47,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ url: session.url });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    console.error('Stripe checkout error:', err);
+    return res.status(500).json({ error: err.message, type: err.type });
   }
 }

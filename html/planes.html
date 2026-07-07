@@ -719,6 +719,7 @@
           var close = function() {
             modal.setAttribute('aria-hidden', 'true');
             document.body.classList.remove('modal-open');
+            document.getElementById('modal-cancel').blur();
           };
           document.getElementById('modal-cancel').onclick = close;
           modal.onclick = function(e) {
@@ -757,6 +758,7 @@
           var close = function() {
             modal.setAttribute('aria-hidden', 'true');
             document.body.classList.remove('modal-open');
+            document.getElementById('modal-cancel').blur();
           };
           document.getElementById('modal-cancel').onclick = close;
           modal.onclick = function(e) {
