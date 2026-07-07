@@ -41,10 +41,6 @@ export const AuthController = {
         .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
         .join(" ") || "Usuario";
 
-    // Header bienvenida
-    const welcomeEl = document.querySelector(".welcome-text");
-    if (welcomeEl) welcomeEl.textContent = `Bienvenido, ${displayName}`;
-
     // Typewriter
     this.typewriterEffect(displayName);
 
