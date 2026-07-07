@@ -9,6 +9,7 @@ export const AuthController = {
       "generador.html",
       "history.html",
       "profile.html",
+      "settings.html",
     ];
     const currentPath = window.location.pathname.split("/").pop();
 
@@ -19,6 +20,8 @@ export const AuthController = {
         return;
       }
       this.setupUserProfile(user);
+      this._populateSettingsForm(user);
+      this._setupUserMenu(user);
       this.setupLogout();
     }
   },
@@ -156,18 +159,73 @@ export const AuthController = {
     }, 45);
   },
 
-  setupLogout: function () {
-    const logoutBtn = document.querySelector(".logout-btn");
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", async (e) => {
-        e.preventDefault();
-        // Revocar sesión de Google si aplica
-        if (typeof google !== "undefined" && google.accounts) {
-          google.accounts.id.disableAutoSelect();
-        }
-        await window.ContentFlowApp.services.auth.logout();
-        window.location.href = "login.html";
-      });
+  _setupUserMenu: function (user) {
+    const nameEl = document.querySelector(".dropdown-user-name");
+    const emailEl = document.querySelector(".dropdown-user-email");
+    const avatarEl = document.querySelector(".avatar-fallback");
+
+    const displayName = this._getDisplayName(user);
+
+    if (nameEl) nameEl.textContent = displayName;
+    if (emailEl) emailEl.textContent = user.email || "";
+
+    if (avatarEl) {
+      const initials = this._getInitials(displayName);
+      avatarEl.textContent = initials;
     }
+  },
+
+  _getDisplayName: function (user) {
+    const rawName = (user.name || "").trim();
+    const emailName = user.email ? user.email.split("@")[0] : "";
+    const baseName =
+      rawName && rawName !== "Usuario" && rawName !== "Usuario Nuevo"
+        ? rawName
+        : emailName;
+    return (
+      baseName
+        .split(/\s+/)
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(" ") || "Usuario"
+    );
+  },
+
+  _getInitials: function (displayName) {
+    return displayName
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((n) => n[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+  },
+
+  _populateSettingsForm: function (user) {
+    const nameInput = document.getElementById("nombre");
+    const emailInput = document.getElementById("correo");
+
+    if (nameInput) {
+      nameInput.value = user.name || "";
+      nameInput.placeholder = "Tu nombre";
+    }
+    if (emailInput) {
+      emailInput.value = user.email || "";
+      emailInput.placeholder = "Tu correo electrónico";
+    }
+  },
+
+  setupLogout: function () {
+    const handleLogout = async (e) => {
+      e.preventDefault();
+      if (typeof google !== "undefined" && google.accounts) {
+        google.accounts.id.disableAutoSelect();
+      }
+      await window.ContentFlowApp.services.auth.logout();
+      window.location.href = "login.html";
+    };
+
+    document.querySelectorAll(".logout-btn, .dropdown-item--danger").forEach((el) => {
+      el.addEventListener("click", handleLogout);
+    });
   },
 };
