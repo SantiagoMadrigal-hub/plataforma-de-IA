@@ -13,8 +13,8 @@ function timeAgo(dateString) {
 
 export const MetricsPanel = () => {
   const [docs, setDocs] = useState([]);
-  const [credits, setCredits] = useState(87);
-  const [maxCredits, setMaxCredits] = useState(100);
+  const [credits, setCredits] = useState(0);
+  const [maxCredits, setMaxCredits] = useState(0);
 
   useEffect(() => {
     let mounted = true;

@@ -65,6 +65,16 @@ export const SettingsController = {
         }
     },
 
+    _refreshUI: function (user) {
+        if (!user) return;
+        var nameEl = document.querySelector('.dropdown-user-name');
+        var emailEl = document.querySelector('.dropdown-user-email');
+        var badge = document.getElementById('credits-badge');
+        if (nameEl) nameEl.textContent = user.name || 'Usuario';
+        if (emailEl) emailEl.textContent = user.email || '';
+        if (badge) badge.textContent = 'Créditos: ' + (user.stats?.credits ?? '—');
+    },
+
     _updateCreditsBar: function () {
         const fill = document.querySelector(".credits-bar-fill");
         if (!fill) return;
@@ -138,6 +148,8 @@ export const SettingsController = {
                         var nameInput = form.querySelector('#nombre');
                         if (nameInput.value.trim()) {
                             await window.ContentFlowApp.services.auth.updateProfile({ name: nameInput.value.trim() });
+                            var user = window.ContentFlowApp.services.auth.getCurrentUser();
+                            self._refreshUI(user);
                         }
                     } else if (form.querySelector('#new-password')) {
                         await new Promise(function (r) { setTimeout(r, 800); });

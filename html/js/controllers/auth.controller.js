@@ -23,7 +23,28 @@ export const AuthController = {
       this._populateSettingsForm(user);
       this._setupUserMenu(user);
       this.setupLogout();
+
+      this._refreshFromAPI();
     }
+  },
+
+  _refreshFromAPI: async function () {
+    try {
+      const profile = await window.ContentFlowApp.services.auth.getUserProfile();
+      if (!profile) return;
+      this._setupUserMenu(profile);
+      this._populateSettingsForm(profile);
+      this._updateCreditsBadge(profile);
+    } catch (err) {
+      console.warn('No se pudo refrescar perfil:', err);
+    }
+  },
+
+  _updateCreditsBadge: function (profile) {
+    var badge = document.getElementById('credits-badge');
+    if (!badge) return;
+    var credits = profile.stats?.credits ?? '—';
+    badge.textContent = 'Créditos: ' + credits;
   },
 
   setupUserProfile: function (user) {
