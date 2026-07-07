@@ -717,9 +717,11 @@
           modal.setAttribute('aria-hidden', 'false');
           document.body.classList.add('modal-open');
           var close = function() {
+            if (document.activeElement && modal.contains(document.activeElement)) {
+              document.activeElement.blur();
+            }
             modal.setAttribute('aria-hidden', 'true');
             document.body.classList.remove('modal-open');
-            document.getElementById('modal-cancel').blur();
           };
           document.getElementById('modal-cancel').onclick = close;
           modal.onclick = function(e) {
@@ -756,9 +758,11 @@
           modal.setAttribute('aria-hidden', 'false');
           document.body.classList.add('modal-open');
           var close = function() {
+            if (document.activeElement && modal.contains(document.activeElement)) {
+              document.activeElement.blur();
+            }
             modal.setAttribute('aria-hidden', 'true');
             document.body.classList.remove('modal-open');
-            document.getElementById('modal-cancel').blur();
           };
           document.getElementById('modal-cancel').onclick = close;
           modal.onclick = function(e) {
