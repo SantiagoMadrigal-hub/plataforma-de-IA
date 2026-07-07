@@ -4,12 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Inicia sesión en tu cuenta de Lexora"/>
-    <meta name="robots" content="index,follow" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+
     <link rel="stylesheet" href="css/vendor/aos.css">
     <link rel="stylesheet" href="css/vendor/glide.core.min.css">
     <link rel="stylesheet" href="css/variables-globales.css">
@@ -20,28 +20,285 @@
     <link rel="stylesheet" href="css/responsive.css">
 
     <title>Iniciar Sesión - Lexora</title>
-  </head>
-  <body>
 
-    <main class="signup-wrapper login-page">
-      <div class="login-logo">
-        <svg class="login-logo-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-          <path d="M2 17l10 5 10-5"/>
-          <path d="M2 12l10 5 10-5"/>
-        </svg>
-        <span class="login-logo-text">Lexora</span>
-      </div>
+    <style>
+      .login-page-body {
+        font-family: 'Inter', -apple-system, sans-serif;
+        background: #09090b;
+        color: #fff;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .login-page-body .signup-wrapper {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+      }
+
+      .login-page-body .signup-wrapper::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        background:
+          radial-gradient(ellipse 60% 50% at 25% 40%, rgba(99,102,241,0.08) 0%, transparent 70%),
+          radial-gradient(ellipse 50% 40% at 75% 60%, rgba(139,92,246,0.06) 0%, transparent 70%),
+          radial-gradient(ellipse 40% 30% at 50% 80%, rgba(129,140,248,0.04) 0%, transparent 60%);
+        animation: breathe 12s ease-in-out infinite alternate;
+      }
+
+      @keyframes breathe {
+        0% { opacity: 0.6; }
+        100% { opacity: 1; }
+      }
+
+      .login-page-body .signup-wrapper::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        opacity: 0.04;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+        background-repeat: repeat;
+        background-size: 256px 256px;
+        pointer-events: none;
+      }
+
+      .login-page-body .signup-box {
+        position: relative;
+        width: 100%;
+        max-width: 420px;
+        background: rgba(24,24,32,0.6);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 20px;
+        padding: 2.5rem 2rem 2rem;
+        box-shadow: 0 0 90px rgba(139,92,246,0.25), 0 24px 80px rgba(0,0,0,0.5);
+      }
+
+      .login-page-body .login-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        margin-bottom: 2rem;
+      }
+
+      .login-page-body .login-logo-icon { width: 24px; height: 24px; }
+
+      .login-page-body .login-logo-text {
+        font-size: 1.15rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .login-page-body .signup-header { text-align: center; margin-bottom: 2rem; }
+
+      .login-page-body .signup-header h2 {
+        font-size: 1.625rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 0.5rem;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+      }
+
+      .login-page-body .signup-header p {
+        font-size: 0.9rem;
+        color: #9a9aa5;
+        margin: 0;
+        line-height: 1.6;
+      }
+
+      .login-page-body .form { display: flex; flex-direction: column; gap: 1.25rem; }
+
+      .login-page-body .form-group { position: relative; }
+
+      .login-page-body .form-label {
+        display: block;
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: rgba(255,255,255,0.5);
+        margin-bottom: 0.35rem;
+      }
+
+      .login-page-body .form-label-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.35rem;
+      }
+
+      .login-page-body .form-label-row .form-label { margin-bottom: 0; }
+
+      .login-page-body .forgot-link {
+        font-size: 0.78rem;
+        color: #818cf8;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+      }
+
+      .login-page-body .forgot-link:hover { color: #8b5cf6; }
+
+      .login-page-body .form-input {
+        width: 100%;
+        height: 48px;
+        padding: 0 1rem;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 10px;
+        color: #fff;
+        font-size: 16px;
+        font-family: inherit;
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+        transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      }
+
+      .login-page-body .form-input::placeholder { color: #55555f; }
+
+      .login-page-body .form-input:hover { border-color: rgba(255,255,255,0.14); }
+
+      .login-page-body .form-input:focus {
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 3.5px rgba(139,92,246,0.15);
+        background: rgba(255,255,255,0.06);
+      }
+
+      .login-page-body .form-input:focus-visible {
+        outline: 2px solid #8b5cf6;
+        outline-offset: 2px;
+      }
+
+      .login-page-body .input-wrapper {
+        position: relative;
+      }
+
+      .login-page-body .input-wrapper .form-input {
+        padding-right: 2.75rem;
+      }
+
+      .login-page-body .password-toggle {
+        position: absolute;
+        right: 0.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: rgba(255,255,255,0.25);
+        cursor: pointer;
+        padding: 0.4rem;
+        border-radius: 6px;
+        transition: color 0.2s;
+        display: flex;
+      }
+
+      .login-page-body .password-toggle:hover { color: rgba(255,255,255,0.5); }
+      .login-page-body .password-toggle svg { width: 18px; height: 18px; }
+
+      .login-page-body .btn-full {
+        position: relative;
+        width: 100%;
+        height: 48px;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: #fff;
+        box-shadow: 0 2px 16px rgba(99,102,241,0.25);
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .login-page-body .btn-full:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 28px rgba(99,102,241,0.4);
+      }
+
+      .login-page-body .btn-full:active:not(:disabled) { transform: translateY(0); }
+
+      .login-page-body .btn-full:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+      }
+
+      .login-page-body .signup-footer {
+        text-align: center;
+      }
+
+      .login-page-body .signup-footer p {
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.35);
+      }
+
+      .login-page-body .signup-footer a {
+        color: #818cf8;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s;
+      }
+
+      .login-page-body .signup-footer a:hover { color: #8b5cf6; }
+
+      .login-page-body .login-footer {
+        text-align: center;
+        margin-top: 2rem;
+        font-size: 0.78rem;
+        color: #4b4b55;
+        position: relative;
+        z-index: 1;
+      }
+
+      .login-page-body .form-error-google {
+        font-size: 0.85rem;
+        text-align: center;
+        min-height: 1rem;
+        color: #ef4444;
+      }
+
+      @media (max-width: 480px) {
+        .login-page-body .signup-box { padding: 1.75rem 1.25rem; border-radius: 16px; }
+      }
+    </style>
+  </head>
+  <body class="login-page-body">
+
+    <main class="signup-wrapper">
       <div class="signup-box">
+        <div class="login-logo">
+          <svg class="login-logo-icon" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+          <span class="login-logo-text">Lexora</span>
+        </div>
 
         <div class="signup-header">
           <h2>Iniciar Sesión</h2>
           <p>Bienvenido de nuevo.</p>
         </div>
 
-        <!-- Botón de Google -->
-        <div class="google-signin-btn" data-text="signin_with" style="margin-bottom: 16px; display:flex; justify-content:center;"></div>
-        <p class="form-error-google" style="color:#f87171; font-size:0.85rem; text-align:center; min-height:1rem;"></p>
+        <div class="google-signin-btn" data-text="signin_with" style="display:flex; justify-content:center; margin-bottom:0;"></div>
+        <p class="form-error-google"></p>
 
         <div class="divider" style="display:flex; align-items:center; gap:10px; margin:12px 0;">
           <span style="flex:1; height:1px; background:rgba(255,255,255,0.1);"></span>
@@ -53,7 +310,7 @@
           
           <div class="form-group">
             <label for="correo" class="form-label">Correo electrónico</label>
-            <input type="email" id="correo" name="correo" placeholder="tucorreo@ejemplo.com" class="form-input" required />
+            <input type="email" id="correo" name="correo" placeholder="tucorreo@ejemplo.com" class="form-input" required aria-label="Correo electrónico" />
           </div>
 
           <div class="form-group">
@@ -62,7 +319,7 @@
               <a href="forgot-password.html" class="forgot-link">¿Olvidaste tu contraseña?</a>
             </div>
             <div class="input-wrapper">
-              <input type="password" id="contrasena" name="contrasena" class="form-input" required/>
+              <input type="password" id="contrasena" name="contrasena" class="form-input" required aria-label="Contraseña"/>
               <button type="button" class="password-toggle" aria-label="Mostrar contraseña">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -72,7 +329,7 @@
             </div>
           </div>
 
-          <button type="submit" class="btn-full">Iniciar Sesión</button>
+          <button type="submit" class="btn-full" aria-label="Iniciar sesión">Iniciar Sesión</button>
           
           <div class="signup-footer">
             <p>¿No tienes cuenta? <a href="signUp.html">Regístrate aquí</a></p>
@@ -80,11 +337,11 @@
 
         </form>
       </div>
-    </main>
 
-    <footer class="login-footer">
-      <p>&copy; 2026 Lexora. Todos los derechos reservados.</p>
-    </footer>
+      <footer class="login-footer">
+        <p>&copy; 2026 Lexora. Todos los derechos reservados.</p>
+      </footer>
+    </main>
 
     <div class="modal" id="success-login" aria-hidden="true">
       <div class="modal__overlay" data-micromodal-close>
@@ -100,7 +357,7 @@
     <script src="js/vendor/micromodal.min.js"></script>
     <script src="js/vendor/glide.min.js"></script>
     <script src="js/vendor/aos.js"></script>
-        <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/main.js"></script>
 
     <script>
       document.querySelectorAll('.password-toggle').forEach(function(btn) {
