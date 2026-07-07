@@ -10,6 +10,7 @@ export const AuthController = {
       "history.html",
       "profile.html",
       "settings.html",
+      "planes.html",
     ];
     const currentPath = window.location.pathname.split("/").pop();
 
@@ -180,6 +181,7 @@ export const AuthController = {
     const nameEl = document.querySelector(".dropdown-user-name");
     const emailEl = document.querySelector(".dropdown-user-email");
     const avatarEl = document.querySelector(".avatar-fallback");
+    const planEl = document.querySelector(".dropdown-plan");
 
     const displayName = this._getDisplayName(user);
 
@@ -189,6 +191,11 @@ export const AuthController = {
     if (avatarEl) {
       const initials = this._getInitials(displayName);
       avatarEl.textContent = initials;
+    }
+
+    if (planEl) {
+      const plan = (user.plan || "free").charAt(0).toUpperCase() + (user.plan || "free").slice(1);
+      planEl.textContent = "Plan " + plan;
     }
   },
 
