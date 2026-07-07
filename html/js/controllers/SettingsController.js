@@ -14,6 +14,7 @@ export const SettingsController = {
             console.log("Configuraciones inicializadas por defecto.");
         }
 
+        await this._loadStats();
         this._updateCreditsBar();
         this._initPasswordToggles();
         this._initPasswordStrength();
@@ -21,6 +22,36 @@ export const SettingsController = {
         this._initForms();
         this._initExport();
         this._initDeleteAccount();
+    },
+
+    _loadStats: async function () {
+        try {
+            const profile = await window.ContentFlowApp.services.auth.getUserProfile();
+            if (!profile?.stats) return;
+
+            const stats = profile.stats;
+
+            const planEl = document.querySelector('.stat-card--plan .stat-value');
+            if (planEl) planEl.textContent = profile.plan || 'Pro';
+
+            const creditsEl = document.querySelector('.stat-card--credits .stat-value');
+            if (creditsEl) {
+                creditsEl.innerHTML = stats.credits + ' <span class="stat-total">/ ' + stats.creditsLimit + '</span>';
+            }
+
+            const barFill = document.querySelector('.credits-bar-fill');
+            if (barFill) {
+                var pct = Math.min(100, Math.round((stats.credits / stats.creditsLimit) * 100));
+                barFill.style.width = pct + '%';
+            }
+
+            const dateEl = document.querySelector('.stat-card--date .stat-value');
+            if (dateEl && stats.renewalDate) {
+                dateEl.textContent = new Date(stats.renewalDate).toLocaleDateString('es-ES');
+            }
+        } catch (err) {
+            console.error('Error al cargar estadísticas:', err);
+        }
     },
 
     _updateCreditsBar: function () {
@@ -92,7 +123,14 @@ export const SettingsController = {
                 btn.classList.add('btn-loading');
 
                 try {
-                    await new Promise(function (r) { setTimeout(r, 800); });
+                    if (form.querySelector('#nombre')) {
+                        var nameInput = form.querySelector('#nombre');
+                        if (nameInput.value.trim()) {
+                            await window.ContentFlowApp.services.auth.updateProfile({ name: nameInput.value.trim() });
+                        }
+                    } else if (form.querySelector('#new-password')) {
+                        await new Promise(function (r) { setTimeout(r, 800); });
+                    }
                     var msg = form.querySelector('#new-password') ? 'Contraseña actualizada correctamente' : 'Cambios guardados correctamente';
                     self._showToast(msg, 'success');
                     form.querySelectorAll('.form-input.is-error').forEach(function (i) { i.classList.remove('is-error'); });

@@ -2,6 +2,16 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { ProfileHeader, PersonalInfo, SubscriptionPanel, ActivityTimeline, NotificationSettings, PasswordSection } from './profile';
 import { theme } from './profile/styles';
 
+function getInitials(name) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .map(n => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+}
+
 const grid = {
   display: 'grid',
   gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))',
@@ -35,51 +45,81 @@ const UserProfileManager = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      setUserData({
-        name: 'Santiago',
-        email: 'santiago@lexora.com',
-        initials: 'SA',
-        plan: 'Pro Plan',
-        credits: 1250,
-        creditsLimit: 5000,
-        renewalDate: '15 Jul 2026',
-        avatar: null,
-        completionPercentage: 65,
-        memberSince: 'Mar 2024',
-        recentActivity: [
-          { id: 1, type: 'document_created', description: 'Creaste "Informe Q2 2026"', date: 'Hoy, 14:30' },
-          { id: 2, type: 'ai_generation', description: 'Generaste 3 variantes de copy', date: 'Ayer, 11:20' },
-          { id: 3, type: 'settings_change', description: 'Actualizaste tu perfil', date: '27 Jun 2026' },
-          { id: 4, type: 'login', description: 'Inicio de sesión desde nuevo dispositivo', date: '25 Jun 2026' },
-        ],
-        notifications: {
-          emailDigest: true,
-          marketingEmails: false,
-          documentShared: true,
-          billingAlerts: true,
-          productUpdates: false,
-        },
-        usageStats: {
-          documentsThisMonth: 42,
-          aiTokensUsed: 28400,
-          aiTokensLimit: 100000,
-          storageUsed: 256,
-          storageLimit: 1024,
-        },
-      });
-      setLoading(false);
+    const loadUserData = async () => {
+      try {
+        const app = window.ContentFlowApp;
+        if (!app) {
+          setLoading(false);
+          return;
+        }
+
+        const user = await app.services.auth.getCurrentUser();
+        const docs = await app.services.documents.getAll();
+        const docList = Array.isArray(docs) ? docs : [];
+
+        const name = user?.name || 'Usuario';
+        const initials = getInitials(name) || 'U';
+
+        setUserData({
+          name: user?.name || '',
+          email: user?.email || '',
+          initials,
+          plan: user?.plan || 'Pro',
+          credits: 87,
+          creditsLimit: 100,
+          renewalDate: '24/07/2026',
+          avatar: user?.avatar_url || null,
+          completionPercentage: 65,
+          memberSince: '—',
+          recentActivity: [],
+          notifications: {
+            emailDigest: true,
+            marketingEmails: false,
+            documentShared: true,
+            billingAlerts: true,
+            productUpdates: false,
+          },
+          usageStats: {
+            documentsThisMonth: docList.length,
+            aiTokensUsed: 28400,
+            aiTokensLimit: 100000,
+            storageUsed: 256,
+            storageLimit: 1024,
+          },
+        });
+      } catch (err) {
+        console.error('Error al cargar datos del perfil:', err);
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchUserData();
+    loadUserData();
   }, []);
 
-  const handleProfileUpdate = useCallback((data) => {
-    setUserData(prev => ({ ...prev, ...data }));
+  const handleProfileUpdate = useCallback(async (data) => {
+    try {
+      const app = window.ContentFlowApp;
+      if (app?.services?.auth?.updateProfile) {
+        const updated = await app.services.auth.updateProfile(data);
+        setUserData(prev => ({ ...prev, name: updated.name || '', email: updated.email || '' }));
+      } else {
+        setUserData(prev => ({ ...prev, ...data }));
+      }
+    } catch (err) {
+      console.error('Error al guardar perfil:', err);
+    }
   }, []);
 
-  const handleAvatarChange = useCallback((dataUrl) => {
-    setUserData(prev => ({ ...prev, avatar: dataUrl, completionPercentage: Math.min(prev.completionPercentage + 10, 100) }));
+  const handleAvatarChange = useCallback(async (dataUrl) => {
+    try {
+      const app = window.ContentFlowApp;
+      if (app?.services?.auth?.updateProfile) {
+        await app.services.auth.updateProfile({ avatar_url: dataUrl });
+      }
+      setUserData(prev => ({ ...prev, avatar: dataUrl, completionPercentage: Math.min(prev.completionPercentage + 10, 100) }));
+    } catch (err) {
+      console.error('Error al guardar avatar:', err);
+    }
   }, []);
 
   const handleNotificationChange = useCallback((key, value) => {

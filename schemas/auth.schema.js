@@ -11,4 +11,9 @@ const loginSchema = z.object({
   password: z.string().min(1, 'La contraseña es requerida'),
 });
 
-module.exports = { registerSchema, loginSchema };
+const updateProfileSchema = z.object({
+  name: z.string().min(1, 'El nombre es requerido').max(100).optional(),
+  avatar_url: z.string().max(500000, 'La imagen es demasiado grande').optional(),
+});
+
+module.exports = { registerSchema, loginSchema, updateProfileSchema };

@@ -15,8 +15,8 @@ const PersonalInfo = ({ userData, onUpdate }) => {
 
   const handleSave = () => {
     setError('');
-    if (!validate()) return;
-    onUpdate?.({ name: name.trim(), email: email.trim() });
+    if (!name.trim()) { setError('El nombre es obligatorio'); return false; }
+    onUpdate?.({ name: name.trim() });
     setEditing(false);
   };
 
@@ -66,13 +66,11 @@ const PersonalInfo = ({ userData, onUpdate }) => {
           </div>
           <div style={fieldGroup}>
             <label style={label}>Correo Electrónico</label>
-            <input
-              style={input}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onFocus={(e) => { e.target.style.borderColor = theme.accent }}
-              onBlur={(e) => { e.target.style.borderColor = theme.border }}
-            />
+                <input
+                  style={{ ...input, opacity: 0.7, cursor: 'not-allowed' }}
+                  value={email}
+                  readOnly
+                />
           </div>
           {error && (
             <div style={{ color: theme.error, fontSize: '13px', marginBottom: '12px' }}>{error}</div>

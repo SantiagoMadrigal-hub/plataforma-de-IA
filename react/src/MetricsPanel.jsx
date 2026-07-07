@@ -13,13 +13,22 @@ function timeAgo(dateString) {
 
 export const MetricsPanel = () => {
   const [docs, setDocs] = useState([]);
+  const [credits, setCredits] = useState(87);
+  const [maxCredits, setMaxCredits] = useState(100);
 
   useEffect(() => {
     let mounted = true;
     async function load() {
       try {
-        const allDocs = await window.ContentFlowApp.services.documents.getAll();
+        const app = window.ContentFlowApp;
+        const allDocs = await app.services.documents.getAll();
         if (mounted) setDocs(allDocs);
+
+        const profile = await app.services.auth.getUserProfile();
+        if (mounted && profile?.stats) {
+          setCredits(profile.stats.credits);
+          setMaxCredits(profile.stats.creditsLimit);
+        }
       } catch {
         if (mounted) setDocs([]);
       }
@@ -32,8 +41,6 @@ export const MetricsPanel = () => {
     return () => { mounted = false; };
   }, []);
 
-  const credits = 87;
-  const maxCredits = 100;
   const percentage = Math.min(100, Math.max(0, (credits / maxCredits) * 100));
   const barColor = percentage <= 20 ? '#ef4444' : percentage <= 50 ? '#f59e0b' : '#22c55e';
   const docsGenerated = docs.length;

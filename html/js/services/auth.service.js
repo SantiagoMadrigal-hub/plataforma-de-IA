@@ -33,6 +33,22 @@ export class AuthService {
     return getUser();
   }
 
+  async getUserProfile() {
+    const data = await api('GET', '/api/auth/me');
+    if (data && data.id) {
+      setUser(data);
+    }
+    return data;
+  }
+
+  async updateProfile(updates) {
+    const data = await api('PUT', '/api/auth/me', updates);
+    if (data && data.id) {
+      setUser(data);
+    }
+    return data;
+  }
+
   async loginWithGoogle(googleUser) {
     const data = await api('POST', '/api/auth/google', googleUser);
     setToken(data.accessToken);
