@@ -2349,20 +2349,39 @@ body.dark-theme {
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 36px;
   height: 36px;
   border-radius: 10px;
   border: 1px solid var(--color-border);
   background: var(--color-white);
-  color: #6B7280;
-  font-size: 1.1rem;
-  line-height: 1;
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
   box-shadow: var(--shadow-sm);
+}
+
+.modal-x-close::before,
+.modal-x-close::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 2px;
+  background: #6B7280;
+  border-radius: 1px;
+}
+
+.modal-x-close::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.modal-x-close::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.modal-x-close:hover::before,
+.modal-x-close:hover::after {
+  background: #111827;
 }
 
 .modal-x-close:hover {
@@ -2372,14 +2391,22 @@ body.dark-theme {
 
 .dark-theme .modal-x-close {
   background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.6);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.dark-theme .modal-x-close::before,
+.dark-theme .modal-x-close::after {
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .dark-theme .modal-x-close:hover {
   background: rgba(255, 255, 255, 0.14);
   border-color: rgba(255, 255, 255, 0.2);
-  color: #fff;
+}
+
+.dark-theme .modal-x-close:hover::before,
+.dark-theme .modal-x-close:hover::after {
+  background: #fff;
 }
 
 .modal-danger-icon {
