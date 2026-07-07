@@ -1042,6 +1042,37 @@ footer h3, footer p {
   background-color: #fef2f2;
 }
 
+/* Botón full-width de gestión de suscripción */
+.btn-subscription {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.btn-subscription:hover {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.dark-theme .btn-subscription {
+  background: rgba(79, 70, 229, 0.12);
+  color: #818cf8;
+}
+
+.dark-theme .btn-subscription:hover {
+  background: var(--color-primary);
+  color: #fff;
+}
+
 /* Espaciado extra para el botón principal dentro del generador */
 .generator-panel .btn-full {
   margin-top: 0.75rem;
@@ -1252,6 +1283,9 @@ footer h3, footer p {
   text-align: center;
   border: 1px solid var(--color-border);
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .stat-card:hover {
