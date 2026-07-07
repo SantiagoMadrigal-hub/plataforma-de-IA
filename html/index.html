@@ -287,5 +287,46 @@
       </div>
       <p class="copyright">© 2026 Lexora AI. Todos los derechos reservados.</p>
     </footer>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <script>
+      (function() {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('deleted') !== '1') return;
+
+        var container = document.getElementById('toast-container');
+        var toast = document.createElement('div');
+        toast.className = 'toast toast--success toast--visible';
+
+        toast.innerHTML =
+          '<div class="toast-icon">' +
+            '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+              '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>' +
+              '<polyline points="22 4 12 14.01 9 11.01"/>' +
+            '</svg>' +
+          '</div>' +
+          '<div class="toast-body">' +
+            '<p class="toast-title">Cuenta eliminada correctamente</p>' +
+            '<p class="toast-message">Tu cuenta y todos tus datos han sido eliminados de forma permanente. Esperamos verte de nuevo pronto.</p>' +
+          '</div>' +
+          '<button class="toast-close" onclick="this.parentElement.remove()">' +
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+              '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>' +
+            '</svg>' +
+          '</button>';
+
+        container.appendChild(toast);
+
+        setTimeout(function() {
+          toast.classList.remove('toast--visible');
+          toast.classList.add('toast--hiding');
+          setTimeout(function() { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 400);
+        }, 6000);
+
+        var cleanUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+      })();
+    </script>
   </body>
-</html>
+  </html>

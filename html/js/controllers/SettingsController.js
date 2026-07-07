@@ -383,7 +383,7 @@ export const SettingsController = {
                     body.password = confirmPw.value.trim();
                 }
                 await window.ContentFlowApp.services.auth.deleteAccount(body.password);
-                window.location.href = 'index.html';
+                window.location.href = 'index.html?deleted=1';
             } catch (err) {
                 self._showToast(err.message || 'Error al eliminar la cuenta', 'error');
                 if (textSpan) textSpan.textContent = origText;
