@@ -571,10 +571,13 @@ textarea.form-input {
 .modal__container {
   background: var(--color-white);
   border-radius: var(--radius-xl);
-  padding: var(--space-8);
-  max-width: 420px;
-  width: 90%;
-  box-shadow: var(--shadow-xl);
+  padding: 2rem;
+  max-width: 440px;
+  width: calc(100% - 2rem);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
   text-align: center;
   animation: modalSlideUp 0.25s ease;
 }

@@ -2356,6 +2356,38 @@ body.dark-theme {
   margin-bottom: 0.75rem;
 }
 
+.modal-export-note {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--color-text-tertiary);
+  margin: 1rem 0 0;
+  padding: 0.75rem;
+  background: rgba(79, 70, 229, 0.04);
+  border-radius: var(--radius-md);
+  text-align: left;
+}
+
+.modal-export-note svg {
+  flex-shrink: 0;
+  color: var(--color-primary);
+}
+
+.modal-export-note a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.modal-export-note a:hover {
+  color: var(--color-primary-hover);
+}
+
+.dark-theme .modal-export-note {
+  background: rgba(79, 70, 229, 0.08);
+}
+
 .modal-confirm-input {
   text-align: center;
   text-transform: uppercase;

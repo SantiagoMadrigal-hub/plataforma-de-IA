@@ -265,12 +265,29 @@ export const SettingsController = {
         var deleteBtn = document.querySelector('.btn-danger--delete');
         var overlay = modal && modal.querySelector('.modal__overlay');
         var confirmInput = document.getElementById('confirm-delete-input');
+        var confirmPw = document.getElementById('confirm-delete-pw');
         var confirmBtn = document.getElementById('confirm-delete-btn');
         var closeBtns = modal && modal.querySelectorAll('[data-delete-close]');
+        var exportLink = document.getElementById('modal-export-link');
         if (!modal || !deleteBtn || !confirmInput || !confirmBtn) return;
 
-        function show() { modal.classList.add('is-open'); modal.setAttribute('aria-hidden', 'false'); }
-        function hide() { modal.classList.remove('is-open'); modal.setAttribute('aria-hidden', 'true'); if (confirmInput) confirmInput.value = ''; if (confirmBtn) confirmBtn.disabled = true; }
+        function reset() {
+            confirmInput.value = '';
+            if (confirmPw) { confirmPw.value = ''; confirmPw.classList.remove('is-error'); }
+            confirmBtn.disabled = true;
+        }
+
+        function show() {
+            reset();
+            modal.classList.add('is-open');
+            modal.setAttribute('aria-hidden', 'false');
+        }
+
+        function hide() {
+            modal.classList.remove('is-open');
+            modal.setAttribute('aria-hidden', 'true');
+            reset();
+        }
 
         deleteBtn.addEventListener('click', show);
 
@@ -285,6 +302,12 @@ export const SettingsController = {
 
         confirmBtn.addEventListener('click', async function () {
             if (this.disabled) return;
+            if (confirmPw && !confirmPw.value.trim()) {
+                confirmPw.classList.add('is-error');
+                confirmPw.focus();
+                self._showToast('Ingresa tu contraseña para eliminar la cuenta', 'error');
+                return;
+            }
             this.disabled = true;
             this.classList.add('btn-loading');
 
@@ -297,10 +320,18 @@ export const SettingsController = {
             } finally {
                 this.disabled = false;
                 this.classList.remove('btn-loading');
-                confirmInput.value = '';
-                confirmBtn.disabled = true;
+                reset();
             }
         });
+
+        if (exportLink) {
+            exportLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                hide();
+                var exportBtn = document.getElementById('btn-export');
+                if (exportBtn) exportBtn.click();
+            });
+        }
     },
 
     _showToast: function (message, type) {
