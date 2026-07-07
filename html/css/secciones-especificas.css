@@ -2402,6 +2402,61 @@ body.dark-theme {
   color: #e4e4e7;
 }
 
+/* --- Password strength meter --- */
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-top: 6px;
+  min-height: 18px;
+}
+
+.password-strength-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--color-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.password-strength-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 4px;
+  transition: width 0.2s ease, background 0.2s ease;
+}
+
+.password-strength-fill[data-strength="1"] {
+  width: 33%;
+  background: #ef4444;
+}
+
+.password-strength-fill[data-strength="2"] {
+  width: 66%;
+  background: #eab308;
+}
+
+.password-strength-fill[data-strength="3"] {
+  width: 100%;
+  background: #22c55e;
+}
+
+.password-strength-label {
+  font-size: 0.7rem;
+  color: var(--color-text-tertiary);
+  white-space: nowrap;
+  min-width: 48px;
+  text-align: right;
+}
+
+.dark-theme .password-strength-bar {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.dark-theme .password-strength-label {
+  color: rgba(255, 255, 255, 0.35);
+}
+
 /* --- Nav links in landing page inside dark header --- */
 .dark-theme .nav-links .item a {
   color: #a1a1aa;

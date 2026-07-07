@@ -21,6 +21,13 @@
   }
 }
 
+/* Settings grid en tablets y mobile */
+@media (max-width: 820px) {
+  .settings-container {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Dispositivos Móviles (A partir de 768px hacia abajo) */
 @media (max-width: 768px) {
   /* La barra de navegación se vuelve vertical en móviles */

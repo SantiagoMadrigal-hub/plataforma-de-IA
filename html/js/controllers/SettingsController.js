@@ -16,7 +16,9 @@ export const SettingsController = {
 
         this._updateCreditsBar();
         this._initPasswordToggles();
+        this._initPasswordStrength();
         this._initForms();
+        this._initExport();
         this._initDeleteAccount();
     },
 
@@ -103,6 +105,57 @@ export const SettingsController = {
                     btn.classList.remove('btn-loading');
                 }
             });
+        });
+    },
+
+    _initPasswordStrength: function () {
+        var input = document.getElementById('new-password');
+        var fill = document.getElementById('pw-strength-fill');
+        var label = document.getElementById('pw-strength-label');
+        if (!input || !fill || !label) return;
+
+        input.addEventListener('input', function () {
+            var v = this.value;
+            var score = 0;
+            if (v.length >= 8) score++;
+            if (/[a-z]/.test(v) && /[A-Z]/.test(v)) score++;
+            if (/\d/.test(v)) score++;
+            if (/[^a-zA-Z0-9]/.test(v)) score++;
+
+            var level = Math.min(score, 3);
+            fill.setAttribute('data-strength', level);
+            var texts = { 0: '', 1: 'Débil', 2: 'Media', 3: 'Fuerte' };
+            label.textContent = texts[level] || '';
+        });
+    },
+
+    _initExport: function () {
+        var btn = document.getElementById('btn-export');
+        var icon = document.getElementById('export-icon');
+        var text = document.getElementById('export-text');
+        if (!btn) return;
+
+        btn.addEventListener('click', async function () {
+            if (btn.disabled) return;
+            btn.disabled = true;
+            icon.innerHTML = '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>';
+            text.textContent = 'Generando exportación...';
+
+            try {
+                await new Promise(function (r) { setTimeout(r, 1500); });
+                var container = document.querySelector('.toast-container');
+                if (container) {
+                    var toast = document.createElement('div');
+                    toast.className = 'toast toast--info';
+                    toast.textContent = 'Recibirás tus datos por correo en unos minutos';
+                    container.appendChild(toast);
+                    setTimeout(function () { toast.classList.add('toast-leaving'); setTimeout(function () { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 200); }, 3500);
+                }
+            } finally {
+                btn.disabled = false;
+                icon.innerHTML = '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>';
+                text.textContent = 'Enviar mis datos por correo';
+            }
         });
     },
 
