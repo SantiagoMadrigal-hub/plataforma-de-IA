@@ -5,6 +5,7 @@
     }
   },
   "rewrites": [
+    { "source": "/api/documents/([^/]+)", "destination": "/api/documents?id=$1" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/css/(.*)", "destination": "/html/css/$1" },
     { "source": "/js/(.*)", "destination": "/html/js/$1" },

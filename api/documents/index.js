@@ -1,5 +1,6 @@
 const { withAuth } = require('../../lib/middleware/withAuth');
 const { createDocumentSchema } = require('../../schemas/document.schema');
+const { updateDocumentSchema } = require('../../schemas/document.schema');
 const { getDb } = require('../../lib/db');
 const { setCorsHeaders, handleOptions, setSecurityHeaders } = require('../../lib/cors');
 const { AppError, sendError } = require('../../lib/errors');
@@ -10,8 +11,36 @@ async function handler(req, res) {
   setSecurityHeaders(res);
 
   const db = getDb();
+  const docId = req.query?.id;
 
   try {
+    if (docId) {
+      const { data: doc } = await db.from('documents').select().eq('id', docId).single();
+      if (!doc) throw new AppError('NOT_FOUND', 'Documento no encontrado', 404);
+      if (doc.user_id !== req.user.id) throw new AppError('FORBIDDEN', 'No tienes acceso a este documento', 403);
+
+      if (req.method === 'GET') return res.json(doc);
+
+      if (req.method === 'PUT') {
+        const result = updateDocumentSchema.safeParse(req.body);
+        if (!result.success) throw new AppError('VALIDATION_ERROR', result.error.errors[0].message, 400);
+        const { data: updated, error } = await db.from('documents')
+          .update({ ...result.data, updated_at: new Date().toISOString() })
+          .eq('id', docId).select().single();
+        if (error) throw error;
+        return res.json(updated);
+      }
+
+      if (req.method === 'DELETE') {
+        const { error } = await db.from('documents').delete().eq('id', docId);
+        if (error) throw error;
+        return res.json({ success: true });
+      }
+
+      res.setHeader('Allow', 'GET, PUT, DELETE');
+      return res.status(405).json({ error: { code: 'METHOD_NOT_ALLOWED', message: 'Usa GET, PUT o DELETE' } });
+    }
+
     if (req.method === 'GET') {
       const page = Math.max(1, parseInt(req.query?.page || '1'));
       const limit = Math.min(100, Math.max(1, parseInt(req.query?.limit || '20')));
@@ -29,19 +58,11 @@ async function handler(req, res) {
 
     if (req.method === 'POST') {
       const result = createDocumentSchema.safeParse(req.body);
-      if (!result.success) {
-        throw new AppError('VALIDATION_ERROR', result.error.errors[0].message, 400);
-      }
+      if (!result.success) throw new AppError('VALIDATION_ERROR', result.error.errors[0].message, 400);
       const { title, content, format, tone, status } = result.data;
       const { data: doc, error } = await db.from('documents').insert({
-        user_id: req.user.id,
-        title,
-        content,
-        format,
-        tone,
-        status,
+        user_id: req.user.id, title, content, format, tone, status,
       }).select().single();
-
       if (error) throw error;
       return res.status(201).json(doc);
     }
