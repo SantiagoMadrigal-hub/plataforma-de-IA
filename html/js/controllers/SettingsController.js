@@ -112,10 +112,14 @@ export const SettingsController = {
         var input = document.getElementById('new-password');
         var fill = document.getElementById('pw-strength-fill');
         var label = document.getElementById('pw-strength-label');
-        if (!input || !fill || !label) return;
+        var meter = fill && fill.closest('.password-strength');
+        if (!input || !fill || !label || !meter) return;
 
         input.addEventListener('input', function () {
             var v = this.value;
+            if (!v) { meter.classList.remove('is-visible'); return; }
+            meter.classList.add('is-visible');
+
             var score = 0;
             if (v.length >= 8) score++;
             if (/[a-z]/.test(v) && /[A-Z]/.test(v)) score++;

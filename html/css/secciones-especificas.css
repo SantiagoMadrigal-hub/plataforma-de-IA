@@ -2404,11 +2404,15 @@ body.dark-theme {
 
 /* --- Password strength meter --- */
 .password-strength {
-  display: flex;
+  display: none;
   align-items: center;
   gap: 0.625rem;
   margin-top: 6px;
   min-height: 18px;
+}
+
+.password-strength.is-visible {
+  display: flex;
 }
 
 .password-strength-bar {
