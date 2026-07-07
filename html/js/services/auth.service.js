@@ -64,6 +64,10 @@ export class AuthService {
     return data;
   }
 
+  async checkout(plan) {
+    return api('POST', '/api/stripe/checkout', { plan });
+  }
+
   async isAuthenticated() {
     if (getUser()) return true;
     const ok = await attemptRefresh();

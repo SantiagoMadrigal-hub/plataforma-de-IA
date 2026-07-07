@@ -724,9 +724,23 @@
           modal.onclick = function(e) {
             if (e.target === modal) close();
           };
-          confirmBtn.onclick = function() {
+          confirmBtn.onclick = async function() {
             close();
-            showComingSoonModal();
+            try {
+              var app = window.ContentFlowApp;
+              if (!app || !app.services || !app.services.auth) {
+                showComingSoonModal();
+                return;
+              }
+              var result = await app.services.auth.checkout(targetPlan);
+              if (result && result.url) {
+                window.location.href = result.url;
+              } else {
+                showComingSoonModal();
+              }
+            } catch(e) {
+              showComingSoonModal();
+            }
           };
         }
 
