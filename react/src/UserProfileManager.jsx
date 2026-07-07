@@ -76,7 +76,7 @@ const UserProfileManager = () => {
           completionPercentage: 0,
           memberSince: '—',
           recentActivity: [],
-          notifications: {
+          notifications: user?.preferences || {
             emailDigest: true,
             marketingEmails: false,
             documentShared: true,
@@ -126,11 +126,22 @@ const UserProfileManager = () => {
     }
   }, []);
 
-  const handleNotificationChange = useCallback((key, value) => {
+  const handleNotificationChange = useCallback(async (key, value) => {
     setUserData(prev => ({
       ...prev,
       notifications: { ...prev.notifications, [key]: value },
     }));
+    try {
+      const app = window.ContentFlowApp;
+      if (app?.services?.auth?.updateProfile) {
+        await app.services.auth.updateProfile({ preferences: { [key]: value } });
+      }
+    } catch (err) {
+      setUserData(prev => ({
+        ...prev,
+        notifications: { ...prev.notifications, [key]: !value },
+      }));
+    }
   }, []);
 
   if (loading) {

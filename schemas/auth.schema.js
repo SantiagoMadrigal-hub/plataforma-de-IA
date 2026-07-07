@@ -11,9 +11,12 @@ const loginSchema = z.object({
   password: z.string().min(1, 'La contraseña es requerida'),
 });
 
+const notificationKeys = ['emailDigest', 'marketingEmails', 'documentShared', 'billingAlerts', 'productUpdates'];
+
 const updateProfileSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido').max(100).optional(),
   avatar_url: z.string().max(500000, 'La imagen es demasiado grande').optional(),
+  preferences: z.record(z.boolean()).optional(),
 });
 
 module.exports = { registerSchema, loginSchema, updateProfileSchema };

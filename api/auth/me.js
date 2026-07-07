@@ -13,7 +13,7 @@ async function getHandler(req, res) {
   const db = getDb();
 
   const { data: user, error } = await db.from('users')
-    .select('id, email, name, plan, avatar_url, created_at, password_hash')
+    .select('id, email, name, plan, avatar_url, created_at, password_hash, preferences')
     .eq('id', req.user.id)
     .single();
 
@@ -59,6 +59,7 @@ async function getHandler(req, res) {
     plan: user.plan,
     avatar_url: user.avatar_url,
     authProvider,
+    preferences: user.preferences || {},
     stats: {
       credits: creditsRemaining,
       creditsLimit: dailyLimit,
@@ -80,20 +81,34 @@ async function putHandler(req, res) {
     throw new AppError('VALIDATION_ERROR', result.error.errors[0].message, 400);
   }
 
+  const db = getDb();
+
   const updates = {};
   if (result.data.name !== undefined) updates.name = result.data.name;
   if (result.data.avatar_url !== undefined) updates.avatar_url = result.data.avatar_url;
-  updates.updated_at = new Date().toISOString();
 
-  if (Object.keys(updates).length === 1) {
-    return res.json({ id: req.user.id, email: req.user.email, name: req.user.name, plan: req.user.plan, avatar_url: req.user.avatar_url });
+  if (result.data.preferences !== undefined) {
+    const { data: existing } = await db.from('users')
+      .select('preferences')
+      .eq('id', req.user.id)
+      .single();
+    updates.preferences = { ...(existing?.preferences || {}), ...result.data.preferences };
   }
 
-  const db = getDb();
+  if (Object.keys(updates).length === 0) {
+    const { data: user } = await db.from('users')
+      .select('id, email, name, plan, avatar_url, preferences')
+      .eq('id', req.user.id)
+      .single();
+    return res.json(user);
+  }
+
+  updates.updated_at = new Date().toISOString();
+
   const { data: user, error } = await db.from('users')
     .update(updates)
     .eq('id', req.user.id)
-    .select('id, email, name, plan, avatar_url')
+    .select('id, email, name, plan, avatar_url, preferences')
     .single();
 
   if (error) throw error;
