@@ -2357,15 +2357,12 @@ body.dark-theme {
   border-radius: 10px;
   border: 1px solid var(--color-border);
   background: var(--color-white);
-  color: var(--color-text-secondary);
+  color: #6B7280;
+  font-size: 1.1rem;
+  line-height: 1;
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   box-shadow: var(--shadow-sm);
-}
-
-.modal-x-close svg {
-  display: block;
-  stroke: currentColor;
 }
 
 .modal-x-close:hover {
@@ -2376,13 +2373,13 @@ body.dark-theme {
 .dark-theme .modal-x-close {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .dark-theme .modal-x-close:hover {
   background: rgba(255, 255, 255, 0.14);
   border-color: rgba(255, 255, 255, 0.2);
-  color: #e4e4e7;
+  color: #fff;
 }
 
 .modal-danger-icon {
