@@ -1,17 +1,21 @@
 import Stripe from 'stripe';
 import jwt from 'jsonwebtoken';
 
-const stripeKey = (process.env.STRIPE_SECRET_KEY || '').trim();
+function cleanEnv(val) {
+  return (val || '').replace(/^\uFEFF/, '').trim();
+}
+
+const stripeKey = cleanEnv(process.env.STRIPE_SECRET_KEY);
 const stripe = new Stripe(stripeKey);
 
 const PLAN_MAP = {
-  pro: (process.env.STRIPE_PRICE_PRO || '').trim(),
-  business: (process.env.STRIPE_PRICE_BUSINESS || '').trim(),
+  pro: cleanEnv(process.env.STRIPE_PRICE_PRO),
+  business: cleanEnv(process.env.STRIPE_PRICE_BUSINESS),
 };
 
 export default async function handler(req, res) {
   if (req.query?.test === '1') {
-    const key = process.env.STRIPE_SECRET_KEY || '';
+    const key = cleanEnv(process.env.STRIPE_SECRET_KEY);
     const keyOk = key.startsWith('sk_test_') || key.startsWith('sk_live_');
     return res.status(200).json({
       key_length: key.length,
