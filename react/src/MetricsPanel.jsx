@@ -35,6 +35,7 @@ export const MetricsPanel = () => {
   const credits = 87;
   const maxCredits = 100;
   const percentage = Math.min(100, Math.max(0, (credits / maxCredits) * 100));
+  const barColor = percentage <= 20 ? '#ef4444' : percentage <= 50 ? '#f59e0b' : '#22c55e';
   const docsGenerated = docs.length;
   const thisWeek = docs.filter(d => {
     const weekAgo = Date.now() - 7 * 86400000;
@@ -57,9 +58,9 @@ export const MetricsPanel = () => {
         </div>
         <div style={{ background: '#2a2a3c', height: '6px', borderRadius: '4px', overflow: 'hidden' }}>
           <div style={{
-            background: 'linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%)',
+            background: barColor,
             height: '100%', width: `${percentage}%`, borderRadius: '4px',
-            transition: 'width 1s ease-in-out'
+            transition: 'width 1s ease-in-out, background-color 0.3s ease'
           }}></div>
         </div>
       </div>
