@@ -20,33 +20,34 @@ async function getHandler(req, res) {
   if (error) throw error;
 
   const today = new Date().toISOString().slice(0, 10);
+  const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
 
   const { count: docsThisMonth } = await db.from('documents')
-    .count('id', { head: true })
+    .select('id', { count: 'exact', head: true })
     .eq('user_id', req.user.id)
-    .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString());
+    .gte('created_at', monthStart);
 
   const { count: todaysGens } = await db.from('generations')
-    .count('id', { head: true })
+    .select('id', { count: 'exact', head: true })
     .eq('user_id', req.user.id)
     .gte('created_at', today);
 
-  const { rows: tokenSum } = await db.raw(
-    'SELECT COALESCE(SUM(tokens_used), 0) as total FROM generations WHERE user_id = $1',
-    [req.user.id]
-  );
-  const totalTokens = parseInt(tokenSum?.[0]?.total || '0', 10);
+  const { data: gens, error: gensErr } = await db.from('generations')
+    .select('tokens_used')
+    .eq('user_id', req.user.id);
+  if (gensErr) throw gensErr;
+  const totalTokens = (gens || []).reduce((s, g) => s + (g.tokens_used || 0), 0);
+
+  const { data: docs, error: docsErr } = await db.from('documents')
+    .select('content')
+    .eq('user_id', req.user.id);
+  if (docsErr) throw docsErr;
+  const storageBytes = (docs || []).reduce((s, d) => s + ((d.content || '').length || 0), 0);
 
   const dailyLimit = PLAN_LIMITS[user.plan]?.perDay || 10;
   const creditsRemaining = Math.max(0, dailyLimit - (todaysGens || 0));
 
   const renewalDate = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
-
-  const { rows: storageSum } = await db.raw(
-    "SELECT COALESCE(SUM(LENGTH(content)), 0) as total FROM documents WHERE user_id = $1",
-    [req.user.id]
-  );
-  const storageUsed = parseInt(storageSum?.[0]?.total || '0', 10);
 
   res.json({
     id: user.id,
@@ -60,7 +61,7 @@ async function getHandler(req, res) {
       documentsThisMonth: docsThisMonth || 0,
       aiTokensUsed: totalTokens,
       aiTokensLimit: 100000,
-      storageUsed: Math.round(storageUsed / 1024),
+      storageUsed: Math.round(storageBytes / 1024),
       storageLimit: 102400,
       renewalDate,
     },
