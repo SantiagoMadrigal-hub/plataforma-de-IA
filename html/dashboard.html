@@ -37,7 +37,6 @@
                     <li><a href="history.html">Historial</a></li>
                     <li><a href="settings.html">Configuración</a></li>
                     <li><a href="profile.html">Perfil</a></li>
-                    <li><a href="#" class="logout-btn">Cerrar Sesión</a></li>
                 </ul>
             </nav>
         </aside>
@@ -48,7 +47,23 @@
                 <p class="welcome-text">Bienvenido</p>
                 <div class="user-info">
                     <p class="credits-badge">Créditos: 87</p>
-                    <a href="profile.html" class="profile-link"><img src="assets/img/default-avatar.svg" alt="Perfil" class="profile-pic"></a>
+                    <div class="user-menu">
+                        <button class="user-menu-trigger" aria-haspopup="true" aria-expanded="false">
+                            <span class="avatar-fallback">U</span>
+                            <svg class="chevron-down" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div class="user-dropdown">
+                            <div class="dropdown-header">
+                                <span class="dropdown-user-name">Usuario</span>
+                                <span class="dropdown-user-email">usuario@ejemplo.com</span>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a href="profile.html" class="dropdown-item">Perfil</a>
+                            <a href="settings.html" class="dropdown-item">Configuración</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item dropdown-item--danger">Cerrar Sesión</a>
+                        </div>
+                    </div>
                 </div>
             </header>
 
