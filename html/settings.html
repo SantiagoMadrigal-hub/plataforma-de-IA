@@ -117,8 +117,27 @@
 
                 <div class="form-group">
                     <label for="correo" class="form-label">Correo Electrónico</label>
-                    <input type="email" id="correo" name="correo" class="form-input" readonly>
-                    <span class="form-helper">Para cambiar el correo, contacta a soporte</span>
+                    <div class="input-wrapper input-wrapper--locked">
+                        <input type="email" id="correo" name="correo" class="form-input" readonly>
+                        <span class="input-locked-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </span>
+                    </div>
+                    <span class="form-helper">No editable. Contacta a soporte para cambiarlo.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="zona-horaria" class="form-label">Zona horaria</label>
+                    <select id="zona-horaria" name="zonaHoraria" class="form-input">
+                        <option value="America/Mexico_City">Ciudad de México (UTC-6)</option>
+                        <option value="America/Argentina/Buenos_Aires">Buenos Aires (UTC-3)</option>
+                        <option value="America/Bogota">Bogotá (UTC-5)</option>
+                        <option value="America/Santiago">Santiago (UTC-4)</option>
+                        <option value="America/Lima">Lima (UTC-5)</option>
+                        <option value="America/Madrid" data-sync>Madrid (UTC+1)</option>
+                        <option value="America/New_York">Nueva York (UTC-5)</option>
+                        <option value="UTC">UTC</option>
+                    </select>
                 </div>
 
                 <button type="submit" class="btn-full">Guardar Cambios</button>
