@@ -52,17 +52,19 @@ export const SmartDocumentList = () => {
     <div style={{ background: '#151521', padding: '24px', borderRadius: '12px', border: '1px solid #2a2a3c' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <h3 style={{ margin: 0, color: '#ffffff', fontSize: '18px' }}>Tus Documentos</h3>
-        <input
-          type="text"
-          placeholder="Buscar documentos..."
-          aria-label="Buscar documentos"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{
-            padding: '8px 12px', borderRadius: '6px', border: '1px solid #2a2a3c',
-            background: '#1e1e2d', color: '#ffffff', outline: 'none'
-          }}
-        />
+        {allDocs.length > 0 && (
+          <input
+            type="text"
+            placeholder="Buscar documentos..."
+            aria-label="Buscar documentos"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              padding: '8px 12px', borderRadius: '6px', border: '1px solid #2a2a3c',
+              background: '#1e1e2d', color: '#ffffff', outline: 'none'
+            }}
+          />
+        )}
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
