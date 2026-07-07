@@ -1251,10 +1251,19 @@ footer h3, footer p {
 
 /* Contenedor principal: Limitamos el ancho para que no se vea desproporcionado en pantallas gigantes */
 .settings-container {
-  max-width: 800px;
-  display: flex;
-  flex-direction: column;
+  max-width: 960px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 2rem;
+  align-items: start;
+}
+
+.settings-container .settings-panel:first-child {
+  grid-column: 1 / -1;
+}
+
+.settings-container .panel-danger {
+  grid-column: 1 / -1;
 }
 
 /* Paneles de configuración (Reutiliza la lógica de diseño del Generador) */
