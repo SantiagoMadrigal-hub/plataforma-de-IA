@@ -518,10 +518,9 @@
 
     <script>
       (function() {
-        var app = window.ContentFlowApp;
-
         async function loadPlanData() {
           try {
+            var app = window.ContentFlowApp;
             if (!app || !app.services || !app.services.auth) return;
             var profile = await app.services.auth.getUserProfile();
             if (!profile) return;
@@ -571,19 +570,22 @@
           }
         }
 
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', function() {
-            var checkApp = setInterval(function() {
-              if (window.ContentFlowApp && window.ContentFlowApp.services && window.ContentFlowApp.services.auth) {
-                clearInterval(checkApp);
-                loadPlanData();
-              }
-            }, 100);
-            setTimeout(function() { clearInterval(checkApp); }, 5000);
-          });
-        } else {
+        var ready = false;
+        function onReady() {
+          if (ready) return;
+          ready = true;
           loadPlanData();
         }
+
+        window.addEventListener('ContentFlowReady', onReady);
+
+        if (document.readyState !== 'loading') {
+          if (window.ContentFlowApp) onReady();
+        }
+
+        setTimeout(function() {
+          if (!ready && window.ContentFlowApp) onReady();
+        }, 2000);
 
         document.querySelectorAll('.faq-question').forEach(function(btn) {
           btn.addEventListener('click', function() {
