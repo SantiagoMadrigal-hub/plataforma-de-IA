@@ -128,16 +128,35 @@
 
                 <div class="form-group">
                     <label for="zona-horaria" class="form-label">Zona horaria</label>
-                    <select id="zona-horaria" name="zonaHoraria" class="form-input">
-                        <option value="America/Mexico_City">Ciudad de México (UTC-6)</option>
-                        <option value="America/Argentina/Buenos_Aires">Buenos Aires (UTC-3)</option>
-                        <option value="America/Bogota">Bogotá (UTC-5)</option>
-                        <option value="America/Santiago">Santiago (UTC-4)</option>
-                        <option value="America/Lima">Lima (UTC-5)</option>
-                        <option value="America/Madrid" data-sync>Madrid (UTC+1)</option>
-                        <option value="America/New_York">Nueva York (UTC-5)</option>
-                        <option value="UTC">UTC</option>
-                    </select>
+                    <div class="cs-wrap" role="combobox" aria-expanded="false" aria-haspopup="listbox">
+                        <button type="button" class="cs-trigger" aria-labelledby="zona-horaria-label">
+                            <span class="cs-value">Ciudad de México (UTC-6)</span>
+                            <svg class="cs-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div class="cs-dropdown">
+                            <input type="text" class="cs-search" placeholder="Buscar zona horaria..." autocomplete="off">
+                            <div class="cs-options" role="listbox" id="zona-horaria-listbox">
+                                <button type="button" class="cs-option" role="option" data-value="America/Mexico_City" aria-selected="true">Ciudad de México (UTC-6)</button>
+                                <button type="button" class="cs-option" role="option" data-value="America/Argentina/Buenos_Aires">Buenos Aires (UTC-3)</button>
+                                <button type="button" class="cs-option" role="option" data-value="America/Bogota">Bogotá (UTC-5)</button>
+                                <button type="button" class="cs-option" role="option" data-value="America/Santiago">Santiago (UTC-4)</button>
+                                <button type="button" class="cs-option" role="option" data-value="America/Lima">Lima (UTC-5)</button>
+                                <button type="button" class="cs-option" role="option" data-value="America/Madrid">Madrid (UTC+1)</button>
+                                <button type="button" class="cs-option" role="option" data-value="America/New_York">Nueva York (UTC-5)</button>
+                                <button type="button" class="cs-option" role="option" data-value="UTC">UTC</button>
+                            </div>
+                        </div>
+                        <select id="zona-horaria" name="zonaHoraria" class="form-input" hidden>
+                            <option value="America/Mexico_City">Ciudad de México (UTC-6)</option>
+                            <option value="America/Argentina/Buenos_Aires">Buenos Aires (UTC-3)</option>
+                            <option value="America/Bogota">Bogotá (UTC-5)</option>
+                            <option value="America/Santiago">Santiago (UTC-4)</option>
+                            <option value="America/Lima">Lima (UTC-5)</option>
+                            <option value="America/Madrid">Madrid (UTC+1)</option>
+                            <option value="America/New_York">Nueva York (UTC-5)</option>
+                            <option value="UTC">UTC</option>
+                        </select>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-full">Guardar Cambios</button>

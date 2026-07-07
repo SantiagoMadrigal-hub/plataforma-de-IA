@@ -17,6 +17,7 @@ export const SettingsController = {
         this._updateCreditsBar();
         this._initPasswordToggles();
         this._initPasswordStrength();
+        this._initCustomSelects();
         this._initForms();
         this._initExport();
         this._initDeleteAccount();
@@ -105,6 +106,101 @@ export const SettingsController = {
                     btn.classList.remove('btn-loading');
                 }
             });
+        });
+    },
+
+    _initCustomSelects: function () {
+        document.querySelectorAll('.cs-wrap').forEach(function (wrap) {
+            var trigger = wrap.querySelector('.cs-trigger');
+            var dropdown = wrap.querySelector('.cs-dropdown');
+            var search = wrap.querySelector('.cs-search');
+            var options = wrap.querySelectorAll('.cs-option');
+            var native = wrap.querySelector('select');
+            if (!trigger || !dropdown || !options.length) return;
+
+            var selected = wrap.querySelector('.cs-option[aria-selected="true"]');
+            var valueEl = wrap.querySelector('.cs-value');
+
+            function open() {
+                wrap.setAttribute('aria-expanded', 'true');
+                if (search) { search.focus(); search.select(); }
+                document.addEventListener('mousedown', closeOutside);
+                document.addEventListener('keydown', handleKey);
+            }
+
+            function close() {
+                wrap.setAttribute('aria-expanded', 'false');
+                document.removeEventListener('mousedown', closeOutside);
+                document.removeEventListener('keydown', handleKey);
+            }
+
+            function closeOutside(e) {
+                if (!wrap.contains(e.target)) close();
+            }
+
+            function select(el) {
+                if (!el) return;
+                options.forEach(function (o) { o.removeAttribute('aria-selected'); });
+                el.setAttribute('aria-selected', 'true');
+                valueEl.textContent = el.textContent;
+                selected = el;
+                if (native) {
+                    native.value = el.getAttribute('data-value') || '';
+                    native.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+                close();
+            }
+
+            function highlight(dir) {
+                var current = wrap.querySelector('.is-highlighted');
+                var visible = Array.from(options).filter(function (o) { return !o.classList.contains('is-hidden'); });
+                if (!visible.length) return;
+                var idx = current ? visible.indexOf(current) : -1;
+                idx = Math.max(0, Math.min(visible.length - 1, idx + dir));
+                if (current) current.classList.remove('is-highlighted');
+                visible[idx].classList.add('is-highlighted');
+                visible[idx].scrollIntoView({ block: 'nearest' });
+            }
+
+            function handleKey(e) {
+                if (e.key === 'Escape') { e.preventDefault(); close(); trigger.focus(); }
+                if (e.key === 'ArrowDown') { e.preventDefault(); highlight(1); }
+                if (e.key === 'ArrowUp') { e.preventDefault(); highlight(-1); }
+                if (e.key === 'Enter') {
+                    var highlighted = wrap.querySelector('.is-highlighted');
+                    if (highlighted) { e.preventDefault(); select(highlighted); }
+                }
+            }
+
+            trigger.addEventListener('click', function () {
+                if (wrap.getAttribute('aria-expanded') === 'true') { close(); return; }
+                open();
+            });
+
+            options.forEach(function (opt) {
+                opt.addEventListener('click', function () { select(this); });
+                opt.addEventListener('mousemove', function () {
+                    wrap.querySelectorAll('.is-highlighted').forEach(function (h) { h.classList.remove('is-highlighted'); });
+                    this.classList.add('is-highlighted');
+                });
+            });
+
+            if (search) {
+                search.addEventListener('input', function () {
+                    var q = this.value.toLowerCase().trim();
+                    options.forEach(function (o) {
+                        o.classList.toggle('is-hidden', q && !o.textContent.toLowerCase().includes(q));
+                    });
+                    wrap.querySelectorAll('.is-highlighted').forEach(function (h) { h.classList.remove('is-highlighted'); });
+                    var firstVisible = Array.from(options).find(function (o) { return !o.classList.contains('is-hidden'); });
+                    if (firstVisible) firstVisible.classList.add('is-highlighted');
+                });
+                search.addEventListener('keydown', function (e) {
+                    if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter') {
+                        e.stopPropagation();
+                    }
+                });
+            }
         });
     },
 
