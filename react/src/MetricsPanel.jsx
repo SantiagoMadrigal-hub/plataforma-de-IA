@@ -50,7 +50,7 @@ export const MetricsPanel = () => {
         border: '1px solid #2a2a3c', boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
       }}>
         <h4 style={{ margin: '0 0 10px 0', color: '#a1a1aa', fontSize: '14px', fontWeight: '500' }}>
-          Créditos de IA Consumidos
+          Créditos Restantes
         </h4>
         <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#ffffff', marginBottom: '15px' }}>
           {credits}/{maxCredits}
