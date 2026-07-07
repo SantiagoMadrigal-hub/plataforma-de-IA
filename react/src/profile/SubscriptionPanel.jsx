@@ -78,14 +78,14 @@ const SubscriptionPanel = ({ userData }) => {
       </div>
 
       <div style={{ marginTop: 'auto', paddingTop: '16px' }}>
-        <button
-          style={btnSecondary}
+        <a
+          href="planes.html"
+          style={{ ...btnSecondary, display: 'block', textAlign: 'center', textDecoration: 'none' }}
           onMouseOver={(e) => { e.target.style.backgroundColor = theme.border }}
           onMouseOut={(e) => { e.target.style.backgroundColor = 'transparent' }}
-          onClick={() => console.log('Gestionar suscripción')}
         >
           Gestionar Suscripción
-        </button>
+        </a>
       </div>
     </div>
   );
