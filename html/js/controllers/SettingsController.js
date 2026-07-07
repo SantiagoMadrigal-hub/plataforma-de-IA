@@ -32,22 +32,55 @@ export const SettingsController = {
     },
 
     _initForms: function () {
-        const forms = document.querySelectorAll('.settings-panel .form');
+        var self = this;
+        var forms = document.querySelectorAll('.settings-panel .form');
         forms.forEach(function (form) {
             form.addEventListener('submit', async function (e) {
                 e.preventDefault();
+
+                // Security form: validate passwords
+                if (form.querySelector('#new-password')) {
+                    var current = form.querySelector('#current-password');
+                    var newPw = form.querySelector('#new-password');
+                    var confirmPw = form.querySelector('#confirm-password');
+
+                    form.querySelectorAll('.form-input.is-error').forEach(function (i) { i.classList.remove('is-error'); });
+
+                    if (!current.value.trim()) {
+                        current.classList.add('is-error');
+                        current.focus();
+                        self._showToast('Debes ingresar tu contraseña actual', 'error');
+                        return;
+                    }
+                    if (newPw.value.length < 8) {
+                        newPw.classList.add('is-error');
+                        newPw.focus();
+                        self._showToast('La nueva contraseña debe tener al menos 8 caracteres', 'error');
+                        return;
+                    }
+                    if (newPw.value !== confirmPw.value) {
+                        confirmPw.classList.add('is-error');
+                        confirmPw.focus();
+                        self._showToast('Las contraseñas nuevas no coinciden', 'error');
+                        return;
+                    }
+                }
+
                 var btn = form.querySelector('button[type="submit"]');
                 if (!btn || btn.disabled) return;
                 btn.disabled = true;
                 btn.classList.add('btn-loading');
 
                 try {
-                    // Simular guardado (en producción: llamada API)
                     await new Promise(function (r) { setTimeout(r, 800); });
-                    SettingsController._showToast('Cambios guardados correctamente', 'success');
-                    form.querySelectorAll('.form-input').forEach(function (i) { i.classList.remove('is-error'); });
+                    var msg = form.querySelector('#new-password') ? 'Contraseña actualizada correctamente' : 'Cambios guardados correctamente';
+                    self._showToast(msg, 'success');
+                    form.querySelectorAll('.form-input.is-error').forEach(function (i) { i.classList.remove('is-error'); });
+                    if (form.querySelector('#new-password')) {
+                        form.reset();
+                    }
                 } catch (err) {
-                    SettingsController._showToast(err.message || 'Error al guardar', 'error');
+                    self._showToast(err.message || 'Error al guardar', 'error');
                 } finally {
                     btn.disabled = false;
                     btn.classList.remove('btn-loading');

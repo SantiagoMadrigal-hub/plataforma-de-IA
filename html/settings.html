@@ -117,7 +117,8 @@
 
                 <div class="form-group">
                     <label for="correo" class="form-label">Correo Electrónico</label>
-                    <input type="email" id="correo" name="correo" class="form-input" placeholder="tucorreo@ejemplo.com">
+                    <input type="email" id="correo" name="correo" class="form-input" readonly>
+                    <span class="form-helper">Para cambiar el correo, contacta a soporte</span>
                 </div>
 
                 <button type="submit" class="btn-full">Guardar Cambios</button>
@@ -130,8 +131,18 @@
             <form action="dashboard.html" method="get" class="form" data-success-modal="success-settings">
                 
                 <div class="form-group">
-                    <label for="contrasena" class="form-label">Nueva Contraseña</label>
-                    <input type="password" id="contrasena" name="contrasena" class="form-input" placeholder="Deja en blanco para no cambiar">
+                    <label for="current-password" class="form-label">Contraseña actual</label>
+                    <input type="password" id="current-password" name="currentPassword" class="form-input" placeholder="Ingresa tu contraseña actual" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="new-password" class="form-label">Nueva contraseña</label>
+                    <input type="password" id="new-password" name="newPassword" class="form-input" placeholder="Mínimo 8 caracteres" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-password" class="form-label">Confirmar nueva contraseña</label>
+                    <input type="password" id="confirm-password" name="confirmPassword" class="form-input" placeholder="Repite la nueva contraseña" required>
                 </div>
 
                 <button type="submit" class="btn-full">Actualizar Contraseña</button>
