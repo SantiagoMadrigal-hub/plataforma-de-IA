@@ -763,25 +763,21 @@ footer h3, footer p {
   gap: 0.75rem;
 }
 
-/* Brand wordmark in header */
-.header-logo {
+/* Home icon in header */
+.header-home {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  color: var(--color-text-primary);
-  font-size: 1rem;
-  font-weight: 700;
-  text-decoration: none;
-  letter-spacing: -0.03em;
+  color: var(--color-text-secondary);
   transition: color var(--transition-fast);
 }
 
-.header-logo:hover {
+.header-home:hover {
   color: var(--color-primary);
 }
 
-.header-logo svg {
+.header-home svg {
   flex-shrink: 0;
+  display: block;
 }
 
 /* Breadcrumb separator and current page */
@@ -795,9 +791,21 @@ footer h3, footer p {
   display: block;
 }
 
-.breadcrumb-current {
+.breadcrumb-link {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.breadcrumb-link:hover {
+  color: var(--color-primary);
+}
+
+.breadcrumb-current {
+  font-size: 0.875rem;
+  color: var(--color-text-tertiary);
   font-weight: 500;
 }
 
@@ -1622,20 +1630,28 @@ body.dark-theme {
 }
 
 /* Dark theme overrides for new header elements */
-.dark-theme .header-logo {
-  color: #f4f4f5;
+.dark-theme .header-home {
+  color: #a1a1aa;
 }
 
-.dark-theme .header-logo:hover {
+.dark-theme .header-home:hover {
   color: #818cf8;
 }
 
 .dark-theme .breadcrumb-sep {
-  color: #52525b;
+  color: #3f3f46;
+}
+
+.dark-theme .breadcrumb-link {
+  color: #a1a1aa;
+}
+
+.dark-theme .breadcrumb-link:hover {
+  color: #818cf8;
 }
 
 .dark-theme .breadcrumb-current {
-  color: #a1a1aa;
+  color: #52525b;
 }
 
 /* --- Dashboard layout --- */
