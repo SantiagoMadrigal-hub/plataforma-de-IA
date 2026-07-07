@@ -2646,3 +2646,28 @@ body.dark-theme {
 .dark-theme .cs-option[aria-selected="true"] {
   color: #a5b4fc;
 }
+
+/* --- Neutral cancel button for modals --- */
+.btn-cancel {
+  color: var(--color-text-secondary) !important;
+  background: transparent !important;
+  border: 1px solid var(--color-border) !important;
+  box-shadow: none !important;
+}
+
+.btn-cancel:hover {
+  color: var(--color-text-primary) !important;
+  border-color: #9ca3af !important;
+  filter: none !important;
+  box-shadow: none !important;
+}
+
+.dark-theme .btn-cancel {
+  color: #a1a1aa !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark-theme .btn-cancel:hover {
+  color: #e4e4e7 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
