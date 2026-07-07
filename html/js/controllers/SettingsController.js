@@ -15,6 +15,7 @@ export const SettingsController = {
         }
 
         this._updateCreditsBar();
+        this._initForms();
     },
 
     _updateCreditsBar: function () {
@@ -28,5 +29,46 @@ export const SettingsController = {
         else if (pct <= 50) level = "medium";
 
         fill.setAttribute("data-level", level);
+    },
+
+    _initForms: function () {
+        const forms = document.querySelectorAll('.settings-panel .form');
+        forms.forEach(function (form) {
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                var btn = form.querySelector('button[type="submit"]');
+                if (!btn || btn.disabled) return;
+                btn.disabled = true;
+                btn.classList.add('btn-loading');
+
+                try {
+                    // Simular guardado (en producción: llamada API)
+                    await new Promise(function (r) { setTimeout(r, 800); });
+                    SettingsController._showToast('Cambios guardados correctamente', 'success');
+                    form.querySelectorAll('.form-input').forEach(function (i) { i.classList.remove('is-error'); });
+                } catch (err) {
+                    SettingsController._showToast(err.message || 'Error al guardar', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.classList.remove('btn-loading');
+                }
+            });
+        });
+    },
+
+    _showToast: function (message, type) {
+        type = type || 'info';
+        var container = document.querySelector('.toast-container');
+        if (!container) return;
+
+        var toast = document.createElement('div');
+        toast.className = 'toast toast--' + type;
+        toast.textContent = message;
+        container.appendChild(toast);
+
+        setTimeout(function () {
+            toast.classList.add('toast-leaving');
+            setTimeout(function () { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 200);
+        }, 2500);
     }
 };
