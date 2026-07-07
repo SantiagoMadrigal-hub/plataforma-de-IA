@@ -2345,44 +2345,7 @@ body.dark-theme {
   position: relative;
 }
 
-.modal-x-close {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid var(--color-border);
-  background: var(--color-white);
-  cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease;
-  box-shadow: var(--shadow-sm);
-}
 
-.modal-x-close::before,
-.modal-x-close::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 16px;
-  height: 2px;
-  background: #6B7280;
-  border-radius: 1px;
-}
-
-.modal-x-close::before {
-  transform: translate(-50%, -50%) rotate(45deg);
-}
-
-.modal-x-close::after {
-  transform: translate(-50%, -50%) rotate(-45deg);
-}
-
-.modal-x-close:hover::before,
-.modal-x-close:hover::after {
-  background: #111827;
-}
 
 .modal-x-close:hover {
   background: rgba(0, 0, 0, 0.05);

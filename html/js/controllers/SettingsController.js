@@ -263,7 +263,6 @@ export const SettingsController = {
         var self = this;
         var modal = document.getElementById('confirm-delete');
         var deleteBtn = document.querySelector('.btn-danger--delete');
-        var overlay = modal && modal.querySelector('.modal__overlay');
         var confirmInput = document.getElementById('confirm-delete-input');
         var confirmPw = document.getElementById('confirm-delete-pw');
         var confirmBtn = document.getElementById('confirm-delete-btn');
@@ -292,10 +291,7 @@ export const SettingsController = {
 
         deleteBtn.addEventListener('click', show);
 
-        if (overlay) overlay.addEventListener('click', function (e) { if (e.target === overlay) hide(); });
         closeBtns.forEach(function (b) { b.addEventListener('click', hide); });
-
-        document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal.classList.contains('is-open')) hide(); });
 
         confirmInput.addEventListener('input', function () {
             confirmBtn.disabled = this.value.trim() !== 'ELIMINAR';
