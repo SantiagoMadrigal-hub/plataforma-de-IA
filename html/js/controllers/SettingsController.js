@@ -17,6 +17,7 @@ export const SettingsController = {
         this._updateCreditsBar();
         this._initPasswordToggles();
         this._initForms();
+        this._initDeleteAccount();
     },
 
     _updateCreditsBar: function () {
@@ -102,6 +103,47 @@ export const SettingsController = {
                     btn.classList.remove('btn-loading');
                 }
             });
+        });
+    },
+
+    _initDeleteAccount: function () {
+        var self = this;
+        var deleteBtn = document.querySelector('.btn-danger--delete');
+        if (!deleteBtn) return;
+
+        deleteBtn.addEventListener('click', function () {
+            if (typeof MicroModal !== 'undefined') {
+                MicroModal.show('confirm-delete');
+            }
+        });
+
+        var confirmInput = document.getElementById('confirm-delete-input');
+        var confirmBtn = document.getElementById('confirm-delete-btn');
+        if (!confirmInput || !confirmBtn) return;
+
+        confirmInput.addEventListener('input', function () {
+            confirmBtn.disabled = this.value.trim() !== 'ELIMINAR';
+        });
+
+        confirmBtn.addEventListener('click', async function () {
+            if (this.disabled) return;
+            this.disabled = true;
+            this.classList.add('btn-loading');
+
+            try {
+                await new Promise(function (r) { setTimeout(r, 1200); });
+                self._showToast('Cuenta eliminada (simulado)', 'info');
+                if (typeof MicroModal !== 'undefined') {
+                    MicroModal.close('confirm-delete');
+                }
+            } catch (err) {
+                self._showToast(err.message || 'Error al eliminar', 'error');
+            } finally {
+                this.disabled = false;
+                this.classList.remove('btn-loading');
+                if (confirmInput) confirmInput.value = '';
+                confirmBtn.disabled = true;
+            }
         });
     },
 

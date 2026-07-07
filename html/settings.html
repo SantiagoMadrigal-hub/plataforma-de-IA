@@ -116,7 +116,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="correo" class="form-label">Correo Electrónico</label>
+                    <label for="correo" class="form-label">Correo electrónico</label>
                     <div class="input-wrapper input-wrapper--locked">
                         <input type="email" id="correo" name="correo" class="form-input" readonly>
                         <span class="input-locked-icon">
@@ -212,5 +212,24 @@
     </div>
 
     <div class="toast-container" aria-live="polite"></div>
+
+    <!-- Modal de confirmación para eliminar cuenta -->
+    <div class="modal" id="confirm-delete" aria-hidden="true">
+      <div class="modal__overlay" data-micromodal-close>
+        <div class="modal__container modal__container--danger" role="dialog" aria-modal="true">
+          <div class="modal-danger-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </div>
+          <h2>Eliminar cuenta</h2>
+          <p>Esta acción es irreversible. Todos tus datos, generaciones y suscripciones activas se perderán.</p>
+          <p class="modal-confirm-label">Escribe <strong>ELIMINAR</strong> para confirmar</p>
+          <input type="text" id="confirm-delete-input" class="form-input modal-confirm-input" placeholder="ELIMINAR" autocomplete="off">
+          <div class="modal-actions">
+            <button class="btn-full modal__close" data-micromodal-close>Cancelar</button>
+            <button class="btn-full btn-danger--confirm" id="confirm-delete-btn" disabled>Eliminar mi cuenta</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
   </html>
