@@ -36,12 +36,12 @@ export const SettingsController = {
 
             const creditsEl = document.querySelector('.stat-card--credits .stat-value');
             if (creditsEl) {
-                creditsEl.innerHTML = (stats.credits ?? 0) + ' <span class="stat-total">/ ' + (stats.creditsLimit ?? 100) + '</span>';
+                creditsEl.innerHTML = (stats.credits ?? 0) + ' <span class="stat-total">/ ' + (stats.creditsLimit ?? 0) + '</span>';
             }
 
             const barFill = document.querySelector('.credits-bar-fill');
             if (barFill) {
-                var limit = stats.creditsLimit ?? 100;
+                var limit = stats.creditsLimit ?? 0;
                 var pct = limit > 0 ? Math.min(100, Math.round(((stats.credits ?? 0) / limit) * 100)) : 0;
                 barFill.style.width = pct + '%';
             }
@@ -148,8 +148,7 @@ export const SettingsController = {
                         var nameInput = form.querySelector('#nombre');
                         if (nameInput.value.trim()) {
                             await window.ContentFlowApp.services.auth.updateProfile({ name: nameInput.value.trim() });
-                            var user = window.ContentFlowApp.services.auth.getCurrentUser();
-                            self._refreshUI(user);
+                            await self._loadStats();
                         }
                     } else if (form.querySelector('#new-password')) {
                         await new Promise(function (r) { setTimeout(r, 800); });

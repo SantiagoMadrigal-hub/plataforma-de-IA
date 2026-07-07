@@ -59,6 +59,7 @@ async function getHandler(req, res) {
       credits: creditsRemaining,
       creditsLimit: dailyLimit,
       documentsThisMonth: docsThisMonth || 0,
+      documentsLimit: dailyLimit,
       aiTokensUsed: totalTokens,
       aiTokensLimit: 100000,
       storageUsed: Math.round(storageBytes / 1024),

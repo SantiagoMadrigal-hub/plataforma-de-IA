@@ -67,13 +67,13 @@ const UserProfileManager = () => {
           email: user?.email || '',
           initials,
           plan: user?.plan || 'Pro',
-          credits: stats.credits ?? 87,
-          creditsLimit: stats.creditsLimit ?? 100,
+          credits: stats.credits ?? 0,
+          creditsLimit: stats.creditsLimit ?? 0,
           renewalDate: stats.renewalDate
             ? new Date(stats.renewalDate).toLocaleDateString('es-ES')
-            : '24/07/2026',
+            : '—',
           avatar: user?.avatar_url || null,
-          completionPercentage: 65,
+          completionPercentage: 0,
           memberSince: '—',
           recentActivity: [],
           notifications: {
@@ -85,10 +85,10 @@ const UserProfileManager = () => {
           },
           usageStats: {
             documentsThisMonth: stats.documentsThisMonth ?? docList.length,
-            aiTokensUsed: stats.aiTokensUsed ?? 28400,
-            aiTokensLimit: stats.aiTokensLimit ?? 100000,
-            storageUsed: stats.storageUsed ?? 256,
-            storageLimit: stats.storageLimit ?? 1024,
+            aiTokensUsed: stats.aiTokensUsed ?? 0,
+            aiTokensLimit: stats.aiTokensLimit ?? 0,
+            storageUsed: stats.storageUsed ?? 0,
+            storageLimit: stats.storageLimit ?? 0,
           },
         });
       } catch (err) {

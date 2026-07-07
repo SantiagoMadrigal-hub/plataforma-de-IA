@@ -66,7 +66,7 @@ const SubscriptionPanel = ({ userData }) => {
       {usageStats && (
         <div style={fieldGroup}>
           <span style={label}>Uso del Mes</span>
-          <UsageBar label="Documentos" current={usageStats.documentsThisMonth} limit={100} color={theme.success} />
+          <UsageBar label="Documentos" current={usageStats.documentsThisMonth} limit={usageStats.documentsLimit || creditsLimit} color={theme.success} />
           <UsageBar label="Tokens IA" current={usageStats.aiTokensUsed} limit={usageStats.aiTokensLimit} color={theme.warning} />
           <UsageBar label="Almacenamiento" current={usageStats.storageUsed} limit={usageStats.storageLimit} color="#a78bfa" />
         </div>
