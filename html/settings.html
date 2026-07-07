@@ -78,26 +78,35 @@
             
             <div class="stats-grid">
                 <div class="stat-card stat-card--plan">
+                    <div class="stat-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    </div>
                     <h3>Plan <span class="badge-active">Activo</span></h3>
                     <p class="stat-value">Pro</p>
                     <a href="#" class="stat-action">Administrar Plan</a>
                 </div>
                 <div class="stat-card stat-card--credits">
+                    <div class="stat-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    </div>
                     <h3>Créditos restantes</h3>
                     <p class="stat-value">87 <span class="stat-total">/ 100</span></p>
                     <div class="credits-bar">
                         <div class="credits-bar-fill" style="width: 87%"></div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <h3>Fecha de renovación</h3>
+                <div class="stat-card stat-card--date">
+                    <div class="stat-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    </div>
+                    <h3>Renovación</h3>
                     <p class="stat-value">24/07/2026</p>
                 </div>
             </div>
         </section>
 
         <section class="settings-panel">
-            <h2>Información de la cuenta</h2>
+            <h2>Perfil</h2>
 
             <form action="dashboard.html" method="get" class="form" data-success-modal="success-settings">
                 
@@ -110,13 +119,22 @@
                     <label for="correo" class="form-label">Correo Electrónico</label>
                     <input type="email" id="correo" name="correo" class="form-input" placeholder="tucorreo@ejemplo.com">
                 </div>
+
+                <button type="submit" class="btn-full">Guardar Cambios</button>
+            </form>
+        </section>
+
+        <section class="settings-panel">
+            <h2>Seguridad</h2>
+
+            <form action="dashboard.html" method="get" class="form" data-success-modal="success-settings">
                 
                 <div class="form-group">
-                    <label for="contrasena" class="form-label">Contraseña</label>
+                    <label for="contrasena" class="form-label">Nueva Contraseña</label>
                     <input type="password" id="contrasena" name="contrasena" class="form-input" placeholder="Deja en blanco para no cambiar">
                 </div>
 
-                <button type="submit" class="btn-full">Actualizar Configuración</button>
+                <button type="submit" class="btn-full">Actualizar Contraseña</button>
             </form>
         </section>
         

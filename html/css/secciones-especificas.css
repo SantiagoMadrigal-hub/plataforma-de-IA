@@ -1266,6 +1266,22 @@ footer h3, footer p {
   margin-bottom: 0.5rem;
 }
 
+.stat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  margin-bottom: 0.75rem;
+}
+
+.stat-icon svg {
+  display: block;
+}
+
 /* Badge "Activo" dentro del label del plan */
 .badge-active {
   display: inline-block;
@@ -2102,9 +2118,9 @@ body.dark-theme {
   border-color: rgba(255, 255, 255, 0.08);
 }
 
-.dark-theme .stat-card:first-child {
-  background-color: rgba(79, 70, 229, 0.1);
-  border-color: var(--color-primary);
+.dark-theme .stat-icon {
+  background: rgba(79, 70, 229, 0.15);
+  color: #818cf8;
 }
 
 .dark-theme .stat-card h3 {
