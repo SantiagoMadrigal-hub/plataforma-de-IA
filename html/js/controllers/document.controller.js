@@ -169,7 +169,7 @@ export const DocumentController = {
 
     ensureGeneratedContentStyles();
 
-    form.addEventListener("submit", async (e) => {
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
 
       const prompt = document.getElementById("idea").value;
@@ -182,37 +182,58 @@ export const DocumentController = {
       btn.textContent = "Generando...";
       if (outputBox) outputBox.classList.add("is-loading");
 
-      try {
-        const content = await window.ContentFlowApp.services.ai.generate(
-          prompt,
-          tone,
-          format,
-        );
-        const saved = await window.ContentFlowApp.services.ai.save(
-          prompt,
-          content,
-          format,
-        );
+      const outputContainer = document.createElement("div");
+      outputContainer.className = "generated-content";
+      if (outputBox) {
+        outputBox.innerHTML = "";
+        outputBox.appendChild(outputContainer);
+      }
 
-        if (outputBox) {
-          outputBox.classList.remove("is-loading");
-          const bodyContent = stripDuplicateTitle(saved.content, saved.title);
-          outputBox.innerHTML = `
-                        <h3>${escapeHtml(saved.title)}</h3>
-                        <div class="generated-content">${renderMarkdown(bodyContent)}</div>
-                    `;
-        }
-      } catch (err) {
-        if (outputBox) {
-          outputBox.classList.remove("is-loading");
-          outputBox.innerHTML = `
-                        <p class="error-message">Error al generar el contenido: ${escapeHtml(err.message)}. Por favor, inténtalo de nuevo.</p>
-                    `;
-        }
-      } finally {
+      let fullContent = "";
+
+      function finalize() {
         btn.disabled = false;
         btn.textContent = "Generar contenido";
       }
+
+      window.ContentFlowApp.services.ai.generateStream(prompt, tone, format, {
+        onChunk: (text) => {
+          fullContent += text;
+          if (outputContainer) {
+            outputContainer.innerHTML = renderMarkdown(fullContent);
+          }
+        },
+        onDone: async () => {
+          try {
+            const saved = await window.ContentFlowApp.services.ai.save(
+              prompt,
+              fullContent,
+              format,
+            );
+            if (outputBox) {
+              outputBox.classList.remove("is-loading");
+              const bodyContent = stripDuplicateTitle(saved.content, saved.title);
+              outputBox.innerHTML = `
+                            <h3>${escapeHtml(saved.title)}</h3>
+                            <div class="generated-content">${renderMarkdown(bodyContent)}</div>
+                        `;
+            }
+          } catch (saveErr) {
+            if (outputBox) {
+              outputBox.classList.remove("is-loading");
+              outputBox.innerHTML = `<p class="error-message">Error al guardar: ${escapeHtml(saveErr.message)}</p>`;
+            }
+          }
+          finalize();
+        },
+        onError: (err) => {
+          if (outputBox) {
+            outputBox.classList.remove("is-loading");
+            outputBox.innerHTML = `<p class="error-message">Error al generar el contenido: ${escapeHtml(err.message)}. Por favor, intentalo de nuevo.</p>`;
+          }
+          finalize();
+        },
+      });
     });
 
     this.setupActionButtons();

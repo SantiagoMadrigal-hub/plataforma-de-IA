@@ -19,7 +19,7 @@ const API_TIMEOUT_MS = 15_000;
 // le pide el contenido a nuestra propia función serverless, que es la
 // única que conoce la key real (guardada como variable de entorno del
 // servidor). Ver /api/generate.js.
-import { api } from './http.js';
+import { api, getToken } from './http.js';
 
 const AI_PROXY_ENDPOINT = "/api/generate";
 
@@ -41,6 +41,68 @@ export class AIService {
         e.message,
       );
       return this.mockGenerate(prompt, tone, format);
+    }
+  }
+
+  async generateStream(prompt, tone, format, callbacks) {
+    const { onChunk, onDone, onError } = callbacks;
+    const token = getToken();
+
+    try {
+      const res = await fetch("/api/generate-stream", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ prompt, tone, format }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error?.message || `Error ${res.status}`);
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const parts = buffer.split("\n");
+        buffer = parts.pop() || "";
+
+        for (const part of parts) {
+          const line = part.trim();
+          if (!line.startsWith("data: ")) continue;
+          const payload = line.slice(6).trim();
+          if (!payload) continue;
+          try {
+            const data = JSON.parse(payload);
+            if (data.type === "chunk") {
+              onChunk(data.text);
+            } else if (data.type === "done") {
+              onDone(data);
+            } else if (data.type === "error") {
+              onError(new Error(data.message));
+            }
+          } catch {
+            // skip
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("Streaming no disponible, usando metodo alternativo:", err.message);
+      try {
+        const content = await this.callProxy(prompt, tone, format);
+        onChunk(content);
+        onDone({ content, provider: "fallback", model: "fallback" });
+      } catch (e) {
+        onError(e);
+      }
     }
   }
 
