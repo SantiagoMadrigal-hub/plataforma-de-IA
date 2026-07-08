@@ -7,7 +7,6 @@ import { FormController } from "./controllers/form.controller.js";
 import { AuthController } from "./controllers/auth.controller.js";
 import { DocumentController } from "./controllers/document.controller.js";
 import { SettingsController } from "./controllers/SettingsController.js";
-import { ChatController } from "./controllers/chat.controller.js";
 
 /** @typedef {import('./services/auth.service.js').AuthService} AuthService */
 /** @typedef {import('./services/document.service.js').DocumentService} DocumentService */
@@ -77,7 +76,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     AuthController.init(),
     DocumentController.init(),
     SettingsController.init(),
-    ChatController.init(),
   ]);
 
   AOS.init({

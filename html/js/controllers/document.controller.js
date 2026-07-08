@@ -194,7 +194,6 @@ export const DocumentController = {
         if (outputBox) {
           outputBox.classList.remove("is-loading");
           const bodyContent = stripDuplicateTitle(saved.content, saved.title);
-          outputBox.dataset.rawContent = bodyContent;
           outputBox.innerHTML = `
                         <h3>${escapeHtml(saved.title)}</h3>
                         <div class="generated-content">${renderMarkdown(bodyContent)}</div>
