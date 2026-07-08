@@ -22,15 +22,20 @@ export const ChatController = {
     this.form = form;
     this.panel = document.getElementById("chat-panel");
 
-    this.form.addEventListener("submit", () => {
-      setTimeout(() => {
-        const content = this.outputBox.querySelector(".generated-content");
-        if (content) {
-          this.captureContext();
-          this.show();
-        }
-      }, 100);
+    this.observeGeneration();
+  },
+
+  observeGeneration: function () {
+    const observer = new MutationObserver(() => {
+      const content = this.outputBox.querySelector(".generated-content");
+      if (content && this.outputBox.style.display !== "none") {
+        this.captureContext();
+        this.show();
+        observer.disconnect();
+      }
     });
+
+    observer.observe(this.outputBox, { childList: true, subtree: false });
   },
 
   captureContext: function () {
