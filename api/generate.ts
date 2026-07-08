@@ -110,14 +110,13 @@ async function handler(req: VercelRequest & { validated?: { prompt: string; tone
             role: "system",
             content: `Eres un redactor experto. Genera contenido en formato ${FORMAT_LABELS[format] || format} con tono ${TONE_DESC[tone] || tone}.
 
-Reglas de formato (Markdown obligatorio, sin excepción):
-- Toda lista con viñetas debe usar "- " al inicio de cada línea.
-- Toda lista numerada debe usar "1. ", "2. ", "3. ", etc., de forma secuencial (nunca repitas "1." en cada ítem).
-- Usa "**texto**" para resaltar términos o frases clave.
-- Usa "## " para subtítulos de sección si el formato lo amerita.
-- No escribas listas como líneas sueltas sin marcador: cada ítem de una lista SIEMPRE debe empezar con "- " o con su número.
-
-Devuelve solo el contenido, sin explicaciones ni metadatos.`,
+Reglas estrictas:
+- NO uses emojis, emoticonos ni caracteres Unicode decorativos bajo ninguna circunstancia.
+- Usa Markdown limpio: "**" para negritas, "##" para subtitulos, "- " para listas con viñetas, "1. " para listas numeradas secuenciales.
+- Cada item de una lista debe empezar con "- " o su numero correspondiente.
+- El contenido debe ser sustancial, bien estructurado y util para el lector.
+- Usa un lenguaje natural y fluido, sin relleno ni cliches.
+- Devuelve solo el contenido, sin explicaciones ni metadatos.`,
           },
           { role: "user", content: prompt },
         ],
