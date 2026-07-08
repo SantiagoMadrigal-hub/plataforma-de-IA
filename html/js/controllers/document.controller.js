@@ -10,7 +10,7 @@ function escapeHtml(str) {
 // (ver ai.service.js -> save()), así que casi siempre esa primera línea
 // queda duplicada dentro del cuerpo. La quitamos antes de renderizar.
 function stripDuplicateTitle(content, title) {
-  const titleClean = title.replace(/…$/, "").trim();
+  const titleClean = title.replace(/…$/, "").replace(/\*+/g, "").trim();
   const lines = content.split("\n");
 
   while (true) {
@@ -20,11 +20,14 @@ function stripDuplicateTitle(content, title) {
     const firstLineClean = lines[firstIdx]
       .replace(/^[#*\s]+/, "")
       .replace(/[*\s]+$/, "")
+      .replace(/\*+/g, "")
       .trim();
+    const firstLineContent = firstLineClean.replace(/^[^a-zA-ZáéíóúüñÁÉÍÓÚÜÑ0-9]+/, "").trim();
 
     if (
       firstLineClean === titleClean ||
-      firstLineClean.startsWith(titleClean)
+      firstLineClean.startsWith(titleClean) ||
+      firstLineContent.startsWith(titleClean)
     ) {
       lines.splice(firstIdx, 1);
     } else {
