@@ -177,7 +177,6 @@ export const DocumentController = {
 
       btn.disabled = true;
       btn.textContent = "Generando...";
-      if (outputBox) outputBox.classList.add("is-loading");
 
       try {
         const content = await window.ContentFlowApp.services.ai.generate(
@@ -192,7 +191,6 @@ export const DocumentController = {
         );
 
         if (outputBox) {
-          outputBox.classList.remove("is-loading");
           const bodyContent = stripDuplicateTitle(saved.content, saved.title);
           outputBox.innerHTML = `
                         <h3>${escapeHtml(saved.title)}</h3>
@@ -201,7 +199,6 @@ export const DocumentController = {
         }
       } catch (err) {
         if (outputBox) {
-          outputBox.classList.remove("is-loading");
           outputBox.innerHTML = `
                         <p class="error-message">Error al generar el contenido: ${escapeHtml(err.message)}. Por favor, inténtalo de nuevo.</p>
                     `;

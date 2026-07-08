@@ -1132,7 +1132,6 @@ footer h3, footer p {
 
 /* Caja contenedora para simular la respuesta textual de la IA */
 .output-box {
-  position: relative;
   background-color: var(--color-background);
   padding: 2rem;
   border-radius: 12px;
@@ -1140,43 +1139,8 @@ footer h3, footer p {
   min-height: 200px;
   max-height: 60vh;
   overflow-y: auto;
-  scroll-behavior: smooth;
-  scrollbar-width: thin;
-  scrollbar-color: #4f46e5 transparent;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
   transition: box-shadow var(--transition-fast);
-}
-
-.output-box::-webkit-scrollbar {
-  width: 6px;
-}
-
-.output-box::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.output-box::-webkit-scrollbar-thumb {
-  background: #4f46e5;
-  border-radius: 3px;
-}
-
-.output-box::-webkit-scrollbar-thumb:hover {
-  background: #6366f1;
-}
-
-.output-box:not(:hover)::-webkit-scrollbar-thumb {
-  background: rgba(79, 70, 229, 0.4);
-}
-
-.output-box::after {
-  content: '';
-  position: sticky;
-  bottom: 0;
-  display: block;
-  height: 48px;
-  margin: -48px -2rem 0;
-  background: linear-gradient(transparent, var(--color-background));
-  pointer-events: none;
 }
 
 .output-box:hover {
@@ -1192,27 +1156,6 @@ footer h3, footer p {
 .output-box p {
   line-height: 1.75;
   margin-bottom: 0;
-}
-
-/* Loader skeleton animation */
-.output-box.is-loading .generated-content {
-  visibility: hidden;
-}
-
-.output-box.is-loading::before {
-  content: '';
-  position: absolute;
-  inset: 2rem;
-  background: linear-gradient(90deg, transparent 0%, rgba(79, 70, 229, 0.06) 50%, transparent 100%);
-  background-size: 200% 100%;
-  animation: skeleton-shimmer 1.5s ease-in-out infinite;
-  border-radius: 6px;
-  pointer-events: none;
-}
-
-@keyframes skeleton-shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
 }
 
 .format-badge {
@@ -2164,10 +2107,6 @@ body.dark-theme {
 .dark-theme .output-box {
   background-color: #111111;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-}
-
-.dark-theme .output-box::after {
-  background: linear-gradient(transparent, #111111);
 }
 
 .dark-theme .output-box:hover {
