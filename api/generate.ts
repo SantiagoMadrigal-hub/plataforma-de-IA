@@ -30,6 +30,20 @@ const PLAN_LIMITS: Record<string, { perDay: number }> = {
 
 const API_TIMEOUT_MS = 20_000;
 
+function buildSystemPrompt(format: string, tone: string): string {
+  const fmt = FORMAT_LABELS[format] || format;
+  const t = TONE_DESC[tone] || tone;
+  return `Eres un redactor experto. Genera contenido en formato ${fmt} con tono ${t}.
+
+Reglas estrictas:
+- NO uses emojis, emoticonos ni caracteres Unicode decorativos bajo ninguna circunstancia.
+- Usa Markdown limpio: "**" para negritas, "##" para subtitulos, "- " para listas con viñetas, "1. " para listas numeradas secuenciales.
+- Cada item de una lista debe empezar con "- " o su numero correspondiente.
+- El contenido debe ser sustancial, bien estructurado y util para el lector.
+- Usa un lenguaje natural y fluido, sin relleno ni cliches.
+- Devuelve solo el contenido, sin explicaciones ni metadatos.`;
+}
+
 async function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
@@ -37,11 +51,129 @@ async function fetchWithTimeout(url: string, options: RequestInit): Promise<Resp
     return await fetch(url, { ...options, signal: controller.signal });
   } catch (err) {
     if (err instanceof Error && err.name === "AbortError") {
-      throw new Error(`La solicitud a Groq tardó más de ${API_TIMEOUT_MS / 1000}s y fue cancelada.`);
+      throw new Error(`La solicitud tardó más de ${API_TIMEOUT_MS / 1000}s y fue cancelada.`);
     }
     throw err;
   } finally {
     clearTimeout(timer);
+  }
+}
+
+function shouldFallback(res: Response): boolean {
+  return res.status === 429 || res.status === 402 || res.status >= 500;
+}
+
+interface ProviderResult {
+  content: string;
+  tokens: number;
+  model: string;
+  provider: string;
+}
+
+async function tryGroq(prompt: string, format: string, tone: string): Promise<ProviderResult | null> {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) return null;
+
+  try {
+    const res = await fetchWithTimeout("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          { role: "system", content: buildSystemPrompt(format, tone) },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.7,
+        max_tokens: 2000,
+      }),
+    });
+
+    if (!res.ok) {
+      if (shouldFallback(res)) {
+        const text = await res.text();
+        console.error(`Groq error (${res.status}):`, text);
+        return null;
+      }
+      return null;
+    }
+
+    const data = await res.json() as { choices?: { message?: { content?: string } }[]; usage?: { total_tokens?: number } };
+    const content = data.choices?.[0]?.message?.content?.trim();
+    if (!content) return null;
+    return { content, tokens: data.usage?.total_tokens || 0, model: "llama-3.3-70b-versatile", provider: "groq" };
+  } catch {
+    return null;
+  }
+}
+
+async function tryGemini(prompt: string, format: string, tone: string): Promise<ProviderResult | null> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return null;
+
+  try {
+    const res = await fetchWithTimeout(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: buildSystemPrompt(format, tone) }] },
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.7, maxOutputTokens: 2000 },
+        }),
+      },
+    );
+
+    if (!res.ok) {
+      if (shouldFallback(res)) {
+        const text = await res.text();
+        console.error(`Gemini error (${res.status}):`, text);
+        return null;
+      }
+      return null;
+    }
+
+    const data = await res.json() as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
+    const content = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    if (!content) return null;
+    return { content, tokens: 0, model: "gemini-2.0-flash", provider: "gemini" };
+  } catch {
+    return null;
+  }
+}
+
+async function tryOpenAI(prompt: string, format: string, tone: string): Promise<ProviderResult | null> {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) return null;
+
+  try {
+    const res = await fetchWithTimeout("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: buildSystemPrompt(format, tone) },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.7,
+        max_tokens: 2000,
+      }),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error(`OpenAI error (${res.status}):`, text);
+      return null;
+    }
+
+    const data = await res.json() as { choices?: { message?: { content?: string } }[]; usage?: { total_tokens?: number } };
+    const content = data.choices?.[0]?.message?.content?.trim();
+    if (!content) return null;
+    return { content, tokens: data.usage?.total_tokens || 0, model: "gpt-4o-mini", provider: "openai" };
+  } catch {
+    return null;
   }
 }
 
@@ -81,72 +213,27 @@ async function handler(req: VercelRequest & { validated?: { prompt: string; tone
       res.statusCode = 429;
       res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify({
-        error: {
-          code: "RATE_LIMIT_EXCEEDED",
-          message: `Alcanzaste tu límite diario del plan ${req.user!.plan} (${limit} generaciones)`,
-        },
+        error: { code: "RATE_LIMIT_EXCEEDED", message: `Alcanzaste tu límite diario del plan ${req.user!.plan} (${limit} generaciones)` },
       }));
       return;
     }
 
-    const apiKey = process.env.GROQ_API_KEY;
-    if (!apiKey) {
-      res.statusCode = 500;
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({ error: { code: "GROQ_NOT_CONFIGURED", message: "El servicio de IA no está configurado en el servidor." } }));
-      return;
+    const providers: (() => Promise<ProviderResult | null>)[] = [
+      () => tryGroq(prompt, format, tone),
+      () => tryGemini(prompt, format, tone),
+      () => tryOpenAI(prompt, format, tone),
+    ];
+
+    let result: ProviderResult | null = null;
+    for (const attempt of providers) {
+      result = await attempt();
+      if (result) break;
     }
 
-    const groqResponse = await fetchWithTimeout("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        messages: [
-          {
-            role: "system",
-            content: `Eres un redactor experto. Genera contenido en formato ${FORMAT_LABELS[format] || format} con tono ${TONE_DESC[tone] || tone}.
-
-Reglas estrictas:
-- NO uses emojis, emoticonos ni caracteres Unicode decorativos bajo ninguna circunstancia.
-- Usa Markdown limpio: "**" para negritas, "##" para subtitulos, "- " para listas con viñetas, "1. " para listas numeradas secuenciales.
-- Cada item de una lista debe empezar con "- " o su numero correspondiente.
-- El contenido debe ser sustancial, bien estructurado y util para el lector.
-- Usa un lenguaje natural y fluido, sin relleno ni cliches.
-- Devuelve solo el contenido, sin explicaciones ni metadatos.`,
-          },
-          { role: "user", content: prompt },
-        ],
-        temperature: 0.7,
-        max_tokens: 2000,
-      }),
-    });
-
-    if (!groqResponse.ok) {
-      const errText = await groqResponse.text();
-      console.error(`Groq error (${groqResponse.status}):`, errText);
-      res.statusCode = 502;
+    if (!result) {
+      res.statusCode = 503;
       res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({ error: { code: "GROQ_ERROR", message: "La IA no pudo generar el contenido en este momento." } }));
-      return;
-    }
-
-    interface GroqResponse {
-      choices?: { message?: { content?: string } }[];
-      usage?: { total_tokens?: number };
-    }
-
-    const data = await groqResponse.json() as GroqResponse;
-    const content = data.choices?.[0]?.message?.content?.trim();
-    const tokensUsed = data.usage?.total_tokens || 0;
-
-    if (!content) {
-      res.statusCode = 502;
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({ error: { code: "EMPTY_RESPONSE", message: "Respuesta vacía del proveedor de IA." } }));
+      res.end(JSON.stringify({ error: { code: "ALL_PROVIDERS_FAILED", message: "Todos los proveedores de IA fallaron. Intenta de nuevo mas tarde." } }));
       return;
     }
 
@@ -155,13 +242,13 @@ Reglas estrictas:
       prompt,
       tone,
       format,
-      model: "llama-3.3-70b-versatile",
-      tokens_used: tokensUsed,
+      model: `${result.provider}:${result.model}`,
+      tokens_used: result.tokens,
     });
 
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({ content, tokensUsed, remainingToday: remaining - 1 }));
+    res.end(JSON.stringify({ content: result.content, tokensUsed: result.tokens, provider: result.provider, remainingToday: remaining - 1 }));
   } catch (err) {
     sendError(res, err);
   }
