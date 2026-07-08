@@ -1,7 +1,8 @@
 import type { ServerResponse } from 'http';
 import type { VercelRequest } from '../lib/types.js';
 import { withAuth } from '../lib/middleware/withAuth.js';
-import { generateSchema, refineSchema } from '../schemas/generate.schema.js';
+import { withValidation } from '../lib/middleware/withValidation.js';
+import { generateSchema } from '../schemas/generate.schema.js';
 import { getDb } from '../lib/db.js';
 import { setCorsHeaders, handleOptions, setSecurityHeaders } from '../lib/cors.js';
 import { sendError } from '../lib/errors.js';
@@ -44,35 +45,6 @@ async function fetchWithTimeout(url: string, options: RequestInit): Promise<Resp
   }
 }
 
-async function groqChat(messages: { role: string; content: string }[]) {
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) throw new GroqNotConfiguredError();
-
-  const response = await fetchWithTimeout("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages, temperature: 0.7, max_tokens: 2000 }),
-  });
-
-  if (!response.ok) {
-    const errText = await response.text();
-    console.error(`Groq error (${response.status}):`, errText);
-    throw new GroqApiError();
-  }
-
-  interface GroqResponse { choices?: { message?: { content?: string } }[]; usage?: { total_tokens?: number } }
-  const data = await response.json() as GroqResponse;
-  const content = data.choices?.[0]?.message?.content?.trim();
-
-  if (!content) throw new EmptyResponseError();
-
-  return { content, tokensUsed: data.usage?.total_tokens || 0 };
-}
-
-class GroqNotConfiguredError extends Error { code = "GROQ_NOT_CONFIGURED"; message = "El servicio de IA no está configurado en el servidor." }
-class GroqApiError extends Error { code = "GROQ_ERROR"; message = "La IA no pudo procesar la solicitud en este momento." }
-class EmptyResponseError extends Error { code = "EMPTY_RESPONSE"; message = "Respuesta vacía del proveedor de IA." }
-
 async function checkDailyLimit(db: ReturnType<typeof getDb>, userId: string, plan: string) {
   const limit = PLAN_LIMITS[plan]?.perDay || PLAN_LIMITS.free.perDay;
   const today = new Date();
@@ -86,7 +58,7 @@ async function checkDailyLimit(db: ReturnType<typeof getDb>, userId: string, pla
   return { used: count || 0, limit, remaining: limit - (count || 0) };
 }
 
-async function handler(req: VercelRequest & { user?: { id: string; plan: string } }, res: ServerResponse) {
+async function handler(req: VercelRequest & { validated?: { prompt: string; tone: string; format: string }; user?: { id: string; plan: string } }, res: ServerResponse) {
   if (handleOptions(req, res)) return;
   setCorsHeaders(req, res);
   setSecurityHeaders(res);
@@ -99,46 +71,8 @@ async function handler(req: VercelRequest & { user?: { id: string; plan: string 
     return;
   }
 
-  let body: Record<string, unknown>;
   try {
-    body = typeof req.body === 'string' ? JSON.parse(req.body) : ((req.body as Record<string, unknown>) || {});
-  } catch { body = {}; }
-
-  const isRefine = 'content' in body && 'instruction' in body;
-
-  try {
-    if (isRefine) {
-      const { content, instruction, tone, format } = refineSchema.parse(body);
-      const { content: refined } = await groqChat([
-        {
-          role: "system",
-          content: `Eres un asistente experto en redacción que refina contenido existente según las instrucciones del usuario.
-
-Contexto:
-- El contenido original fue creado en formato ${format || "blog"} con tono ${tone || "profesional"}.
-- Mantén el mismo formato y tono a menos que el usuario pida cambiarlos explícitamente.
-- Conserva la estructura general y los puntos clave del contenido original.
-- Si el usuario pide acortar/extender, hazlo inteligentemente sin perder información importante.
-
-Reglas de formato (Markdown obligatorio):
-- Usa "# " para el título principal, "## " para subtítulos.
-- Listas con viñetas: "- " al inicio de cada línea.
-- Listas numeradas: "1. ", "2. ", "3. " de forma secuencial.
-- Usa "**texto**" para negritas, "*texto*" para cursivas.
-- Usa "---" para separadores horizontales.
-
-Devuelve SOLO el contenido refinado, sin explicaciones ni metadatos.`,
-        },
-        { role: "user", content: `Contenido actual:\n\n${content}\n\n---\n\nInstrucción del usuario:\n${instruction}` },
-      ]);
-
-      res.statusCode = 200;
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({ content: refined }));
-      return;
-    }
-
-    const { prompt, tone, format } = generateSchema.parse(body);
+    const { prompt, tone, format } = req.validated!;
     const db = getDb();
 
     const { remaining, limit } = await checkDailyLimit(db, req.user!.id, req.user!.plan);
@@ -147,15 +81,34 @@ Devuelve SOLO el contenido refinado, sin explicaciones ni metadatos.`,
       res.statusCode = 429;
       res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify({
-        error: { code: "RATE_LIMIT_EXCEEDED", message: `Alcanzaste tu límite diario del plan ${req.user!.plan} (${limit} generaciones)` },
+        error: {
+          code: "RATE_LIMIT_EXCEEDED",
+          message: `Alcanzaste tu límite diario del plan ${req.user!.plan} (${limit} generaciones)`,
+        },
       }));
       return;
     }
 
-    const { content, tokensUsed } = await groqChat([
-      {
-        role: "system",
-        content: `Eres un redactor experto. Genera contenido en formato ${FORMAT_LABELS[format] || format} con tono ${TONE_DESC[tone] || tone}.
+    const apiKey = process.env.GROQ_API_KEY;
+    if (!apiKey) {
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ error: { code: "GROQ_NOT_CONFIGURED", message: "El servicio de IA no está configurado en el servidor." } }));
+      return;
+    }
+
+    const groqResponse = await fetchWithTimeout("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          {
+            role: "system",
+            content: `Eres un redactor experto. Genera contenido en formato ${FORMAT_LABELS[format] || format} con tono ${TONE_DESC[tone] || tone}.
 
 Reglas de formato (Markdown obligatorio, sin excepción):
 - Toda lista con viñetas debe usar "- " al inicio de cada línea.
@@ -165,13 +118,44 @@ Reglas de formato (Markdown obligatorio, sin excepción):
 - No escribas listas como líneas sueltas sin marcador: cada ítem de una lista SIEMPRE debe empezar con "- " o con su número.
 
 Devuelve solo el contenido, sin explicaciones ni metadatos.`,
-      },
-      { role: "user", content: prompt },
-    ]);
+          },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.7,
+        max_tokens: 2000,
+      }),
+    });
+
+    if (!groqResponse.ok) {
+      const errText = await groqResponse.text();
+      console.error(`Groq error (${groqResponse.status}):`, errText);
+      res.statusCode = 502;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ error: { code: "GROQ_ERROR", message: "La IA no pudo generar el contenido en este momento." } }));
+      return;
+    }
+
+    interface GroqResponse {
+      choices?: { message?: { content?: string } }[];
+      usage?: { total_tokens?: number };
+    }
+
+    const data = await groqResponse.json() as GroqResponse;
+    const content = data.choices?.[0]?.message?.content?.trim();
+    const tokensUsed = data.usage?.total_tokens || 0;
+
+    if (!content) {
+      res.statusCode = 502;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ error: { code: "EMPTY_RESPONSE", message: "Respuesta vacía del proveedor de IA." } }));
+      return;
+    }
 
     await db.from('generations').insert({
       user_id: req.user!.id,
-      prompt, tone, format,
+      prompt,
+      tone,
+      format,
       model: "llama-3.3-70b-versatile",
       tokens_used: tokensUsed,
     });
@@ -180,14 +164,8 @@ Devuelve solo el contenido, sin explicaciones ni metadatos.`,
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify({ content, tokensUsed, remainingToday: remaining - 1 }));
   } catch (err) {
-    if (err instanceof GroqNotConfiguredError || err instanceof GroqApiError || err instanceof EmptyResponseError) {
-      res.statusCode = err instanceof GroqNotConfiguredError ? 500 : 502;
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({ error: { code: err.code, message: err.message } }));
-      return;
-    }
     sendError(res, err);
   }
 }
 
-export default withAuth(handler);
+export default withAuth(withValidation(generateSchema)(handler));
