@@ -23,9 +23,9 @@ const TONE_DESC: Record<string, string> = {
 };
 
 const PLAN_LIMITS: Record<string, { perDay: number }> = {
-  free: { perDay: 10 },
-  pro: { perDay: 100 },
-  business: { perDay: 500 },
+  free: { perDay: 100 },
+  pro: { perDay: 500 },
+  business: { perDay: 2000 },
 };
 
 const API_TIMEOUT_MS = 20_000;
