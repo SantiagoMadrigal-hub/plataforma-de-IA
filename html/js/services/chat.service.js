@@ -1,6 +1,6 @@
 import { api } from './http.js';
 
-const CHAT_ENDPOINT = '/api/chat';
+const CHAT_ENDPOINT = '/api/generate';
 
 export class ChatService {
   async refine(content, instruction, context = {}) {
