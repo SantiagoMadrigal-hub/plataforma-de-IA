@@ -22,14 +22,14 @@ export const ChatController = {
     this.form = form;
     this.panel = document.getElementById("chat-panel");
 
-    if (outputBox.querySelector(".generated-content")) {
+    if (outputBox.querySelector("h3")) {
       this.captureContext();
       this.show();
     }
 
     this.form.addEventListener("submit", () => {
       setTimeout(() => {
-        if (this.outputBox.querySelector(".generated-content")) {
+        if (this.outputBox.querySelector("h3")) {
           this.captureContext();
           this.show();
         }
