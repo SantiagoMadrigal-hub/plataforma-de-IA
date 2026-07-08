@@ -1,8 +1,8 @@
-const { createClient } = require('@supabase/supabase-js');
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-let client;
+let client: SupabaseClient | null = null;
 
-function getDb() {
+export function getDb(): SupabaseClient {
   if (client) return client;
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -12,5 +12,3 @@ function getDb() {
   client = createClient(url, key);
   return client;
 }
-
-module.exports = { getDb };

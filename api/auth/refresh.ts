@@ -1,26 +1,29 @@
-const { getDb } = require('../../lib/db');
-const { signAccessToken, generateRefreshToken, hashRefreshToken, getRefreshExpiry } = require('../../lib/jwt');
-const { setCorsHeaders, handleOptions, setSecurityHeaders } = require('../../lib/cors');
-const { AppError, sendError } = require('../../lib/errors');
+import type { ServerResponse } from 'http';
+import type { VercelRequest } from '../../lib/types.js';
+import { parse } from 'cookie';
+import { getDb } from '../../lib/db.js';
+import { signAccessToken, generateRefreshToken, hashRefreshToken, getRefreshExpiry } from '../../lib/jwt.js';
+import { setCorsHeaders, handleOptions, setSecurityHeaders } from '../../lib/cors.js';
+import { AppError, sendError } from '../../lib/errors.js';
 
-module.exports = async (req, res) => {
+export default async function handler(req: VercelRequest, res: ServerResponse) {
   if (handleOptions(req, res)) return;
   setCorsHeaders(req, res);
   setSecurityHeaders(res);
 
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
-    return res.status(405).json({ error: { code: 'METHOD_NOT_ALLOWED', message: 'Usa POST' } });
+    res.statusCode = 405;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ error: { code: 'METHOD_NOT_ALLOWED', message: 'Usa POST' } }));
+    return;
   }
 
   try {
-    const cookie = req.headers.cookie;
-    if (!cookie) throw new AppError('NO_REFRESH_TOKEN', 'No se encontró refresh token', 401);
+    const cookies = parse(req.headers.cookie || '');
+    const rawToken = cookies.refresh_token;
+    if (!rawToken) throw new AppError('NO_REFRESH_TOKEN', 'No se encontró refresh token', 401);
 
-    const match = cookie.split(';').find(c => c.trim().startsWith('refresh_token='));
-    if (!match) throw new AppError('NO_REFRESH_TOKEN', 'No se encontró refresh token', 401);
-
-    const rawToken = match.split('=')[1];
     const tokenHash = hashRefreshToken(rawToken);
     const db = getDb();
 
@@ -37,11 +40,12 @@ module.exports = async (req, res) => {
       throw new AppError('REFRESH_EXPIRED', 'Refresh token expirado', 401);
     }
 
-    const db2 = getDb();
-    const { data: user } = await db2.from('users')
+    const { data: user } = await db.from('users')
       .select('id, email, name, plan, avatar_url')
       .eq('id', stored.user_id)
       .single();
+
+    if (!user) throw new AppError('USER_NOT_FOUND', 'Usuario no encontrado', 404);
 
     await db.from('refresh_tokens').update({ revoked: true }).eq('id', stored.id);
 
@@ -52,7 +56,7 @@ module.exports = async (req, res) => {
       user_id: user.id,
       token_hash: newHash,
       user_agent: req.headers['user-agent'] || null,
-      ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress || null,
+      ip: (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || null,
       expires_at: getRefreshExpiry().toISOString(),
     });
 
@@ -60,10 +64,12 @@ module.exports = async (req, res) => {
 
     res.setHeader('Set-Cookie', `refresh_token=${newRefreshToken}; HttpOnly; Secure; SameSite=Strict; Path=/api; Max-Age=${30 * 24 * 60 * 60}`);
 
-    res.json({
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({
       accessToken,
       user: { id: user.id, email: user.email, name: user.name, plan: user.plan, avatar_url: user.avatar_url },
-    });
+    }));
   } catch (err) {
     sendError(res, err);
   }

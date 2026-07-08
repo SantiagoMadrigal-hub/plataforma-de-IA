@@ -11,7 +11,18 @@
     "stripe": "^22.3.0",
     "zod": "^3.23.0"
   },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
   "devDependencies": {
-    "vercel": "^37.0.0"
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cookie": "^0.6.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^26.1.0",
+    "typescript": "^6.0.3",
+    "vercel": "^37.0.0",
+    "vitest": "^4.1.10"
   }
 }

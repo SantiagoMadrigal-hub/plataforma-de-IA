@@ -1,11 +1,13 @@
-const { withAuth } = require('../lib/middleware/withAuth');
-const { withValidation } = require('../lib/middleware/withValidation');
-const { generateSchema } = require('../schemas/generate.schema');
-const { getDb } = require('../lib/db');
-const { setCorsHeaders, handleOptions, setSecurityHeaders } = require('../lib/cors');
-const { sendError } = require('../lib/errors');
+import type { ServerResponse } from 'http';
+import type { VercelRequest } from '../lib/types.js';
+import { withAuth } from '../lib/middleware/withAuth.js';
+import { withValidation } from '../lib/middleware/withValidation.js';
+import { generateSchema } from '../schemas/generate.schema.js';
+import { getDb } from '../lib/db.js';
+import { setCorsHeaders, handleOptions, setSecurityHeaders } from '../lib/cors.js';
+import { sendError } from '../lib/errors.js';
 
-const FORMAT_LABELS = {
+const FORMAT_LABELS: Record<string, string> = {
   instagram: "Post para Instagram",
   blog: "Artículo de blog",
   youtube: "Guion de YouTube",
@@ -13,14 +15,14 @@ const FORMAT_LABELS = {
   seo: "Contenido SEO",
 };
 
-const TONE_DESC = {
+const TONE_DESC: Record<string, string> = {
   profesional: "profesional y corporativo",
   divertido: "divertido y cercano",
   formal: "formal y serio",
   creativo: "creativo e innovador",
 };
 
-const PLAN_LIMITS = {
+const PLAN_LIMITS: Record<string, { perDay: number }> = {
   free: { perDay: 10 },
   pro: { perDay: 100 },
   business: { perDay: 500 },
@@ -28,13 +30,13 @@ const PLAN_LIMITS = {
 
 const API_TIMEOUT_MS = 20_000;
 
-async function fetchWithTimeout(url, options) {
+async function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
   try {
     return await fetch(url, { ...options, signal: controller.signal });
   } catch (err) {
-    if (err.name === "AbortError") {
+    if (err instanceof Error && err.name === "AbortError") {
       throw new Error(`La solicitud a Groq tardó más de ${API_TIMEOUT_MS / 1000}s y fue cancelada.`);
     }
     throw err;
@@ -43,7 +45,7 @@ async function fetchWithTimeout(url, options) {
   }
 }
 
-async function checkDailyLimit(db, userId, plan) {
+async function checkDailyLimit(db: ReturnType<typeof getDb>, userId: string, plan: string) {
   const limit = PLAN_LIMITS[plan]?.perDay || PLAN_LIMITS.free.perDay;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -56,37 +58,46 @@ async function checkDailyLimit(db, userId, plan) {
   return { used: count || 0, limit, remaining: limit - (count || 0) };
 }
 
-async function handler(req, res) {
+async function handler(req: VercelRequest & { validated?: { prompt: string; tone: string; format: string }; user?: { id: string; plan: string } }, res: ServerResponse) {
   if (handleOptions(req, res)) return;
   setCorsHeaders(req, res);
   setSecurityHeaders(res);
 
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
-    return res.status(405).json({ error: { code: "METHOD_NOT_ALLOWED", message: "Usa POST." } });
+    res.statusCode = 405;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ error: { code: "METHOD_NOT_ALLOWED", message: "Usa POST." } }));
+    return;
   }
 
   try {
-    const { prompt, tone, format } = req.validated;
+    const { prompt, tone, format } = req.validated!;
     const db = getDb();
 
-    const { remaining, limit } = await checkDailyLimit(db, req.user.id, req.user.plan);
+    const { remaining, limit } = await checkDailyLimit(db, req.user!.id, req.user!.plan);
 
     if (remaining <= 0) {
-      return res.status(429).json({
+      res.statusCode = 429;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({
         error: {
           code: "RATE_LIMIT_EXCEEDED",
-          message: `Alcanzaste tu límite diario del plan ${req.user.plan} (${limit} generaciones)`,
+          message: `Alcanzaste tu límite diario del plan ${req.user!.plan} (${limit} generaciones)`,
         },
-      });
+      }));
+      return;
     }
 
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
-      return res.status(500).json({ error: { code: "GROQ_NOT_CONFIGURED", message: "El servicio de IA no está configurado en el servidor." } });
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ error: { code: "GROQ_NOT_CONFIGURED", message: "El servicio de IA no está configurado en el servidor." } }));
+      return;
     }
 
-    const response = await fetchWithTimeout("https://api.groq.com/openai/v1/chat/completions", {
+    const groqResponse = await fetchWithTimeout("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
@@ -115,22 +126,33 @@ Devuelve solo el contenido, sin explicaciones ni metadatos.`,
       }),
     });
 
-    if (!response.ok) {
-      const errText = await response.text();
-      console.error(`Groq error (${response.status}):`, errText);
-      return res.status(502).json({ error: { code: "GROQ_ERROR", message: "La IA no pudo generar el contenido en este momento." } });
+    if (!groqResponse.ok) {
+      const errText = await groqResponse.text();
+      console.error(`Groq error (${groqResponse.status}):`, errText);
+      res.statusCode = 502;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ error: { code: "GROQ_ERROR", message: "La IA no pudo generar el contenido en este momento." } }));
+      return;
     }
 
-    const data = await response.json();
+    interface GroqResponse {
+      choices?: { message?: { content?: string } }[];
+      usage?: { total_tokens?: number };
+    }
+
+    const data = await groqResponse.json() as GroqResponse;
     const content = data.choices?.[0]?.message?.content?.trim();
     const tokensUsed = data.usage?.total_tokens || 0;
 
     if (!content) {
-      return res.status(502).json({ error: { code: "EMPTY_RESPONSE", message: "Respuesta vacía del proveedor de IA." } });
+      res.statusCode = 502;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ error: { code: "EMPTY_RESPONSE", message: "Respuesta vacía del proveedor de IA." } }));
+      return;
     }
 
     await db.from('generations').insert({
-      user_id: req.user.id,
+      user_id: req.user!.id,
       prompt,
       tone,
       format,
@@ -138,10 +160,12 @@ Devuelve solo el contenido, sin explicaciones ni metadatos.`,
       tokens_used: tokensUsed,
     });
 
-    return res.status(200).json({ content, tokensUsed, remainingToday: remaining - 1 });
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ content, tokensUsed, remainingToday: remaining - 1 }));
   } catch (err) {
     sendError(res, err);
   }
 }
 
-module.exports = withAuth(withValidation(generateSchema)(handler));
+export default withAuth(withValidation(generateSchema)(handler));

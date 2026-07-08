@@ -8,9 +8,32 @@ import { AuthController } from "./controllers/auth.controller.js";
 import { DocumentController } from "./controllers/document.controller.js";
 import { SettingsController } from "./controllers/SettingsController.js";
 
+/** @typedef {import('./services/auth.service.js').AuthService} AuthService */
+/** @typedef {import('./services/document.service.js').DocumentService} DocumentService */
+/** @typedef {import('./services/ai.service.js').AIService} AIService */
+
+/**
+ * @typedef {Object} AppState
+ * @property {Repository} settings
+ */
+
+/**
+ * @typedef {Object} AppServices
+ * @property {AuthService} auth
+ * @property {DocumentService} documents
+ * @property {AIService} ai
+ */
+
+/**
+ * @typedef {Object} ContentFlowApp
+ * @property {AppState} state
+ * @property {AppServices} services
+ */
+
 document.addEventListener("DOMContentLoaded", async function () {
   const storage = new LocalStorageAdapter();
 
+  /** @type {AppState} */
   const appState = {
     settings: new Repository(storage, "contentflow.settings"),
   };
@@ -32,12 +55,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   await authService.init();
 
+  /** @type {AppServices} */
   const services = {
     auth: authService,
     documents: docService,
     ai: new AIService(appState.settings, docService),
   };
 
+  /** @type {ContentFlowApp} */
   window.ContentFlowApp = { state: appState, services: services };
 
   import("../js/react-bridge.js").catch(function (err) {

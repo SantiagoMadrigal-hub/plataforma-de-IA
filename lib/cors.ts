@@ -1,11 +1,13 @@
-const ALLOWED_ORIGINS = [
+import type { IncomingMessage, ServerResponse } from 'http';
+
+const ALLOWED_ORIGINS: string[] = [
   'http://localhost:3000',
   'http://localhost:5173',
   'https://contentflow.vercel.app',
-  process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`,
-].filter(Boolean);
+  ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+];
 
-function setCorsHeaders(req, res) {
+export function setCorsHeaders(req: IncomingMessage, res: ServerResponse): void {
   const origin = req.headers.origin;
   if (origin && ALLOWED_ORIGINS.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
@@ -15,19 +17,18 @@ function setCorsHeaders(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
 }
 
-function handleOptions(req, res) {
+export function handleOptions(req: IncomingMessage, res: ServerResponse): boolean {
   if (req.method === 'OPTIONS') {
     setCorsHeaders(req, res);
-    res.status(204).end();
+    res.statusCode = 204;
+    res.end();
     return true;
   }
   return false;
 }
 
-function setSecurityHeaders(res) {
+export function setSecurityHeaders(res: ServerResponse): void {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
 }
-
-module.exports = { setCorsHeaders, handleOptions, setSecurityHeaders };
