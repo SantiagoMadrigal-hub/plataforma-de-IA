@@ -1,5 +1,4 @@
 {
-  "nodeVersion": "22.x",
   "functions": {
     "api/**/*.ts": {
       "maxDuration": 30
