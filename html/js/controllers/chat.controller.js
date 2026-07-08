@@ -180,7 +180,6 @@ function stripDuplicateTitle(content, title) {
     const firstLineClean = lines[firstIdx]
       .replace(/^[#*\s]+/, "")
       .replace(/[*\s]+$/, "")
-      .replace(/\*+/g, "")
       .trim();
     if (firstLineClean === titleClean || firstLineClean.startsWith(titleClean)) {
       lines.splice(firstIdx, 1);

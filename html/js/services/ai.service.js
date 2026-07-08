@@ -47,7 +47,7 @@ export class AIService {
   async save(prompt, content, format) {
     const firstLine =
       content.split("\n").find((l) => l.trim().length > 0) || "";
-    const titleFromContent = firstLine.replace(/^[#*\s]+/, "").replace(/[*\s]+$/, "").trim();
+    const titleFromContent = firstLine.replace(/^#+\s*/, "").trim();
     const title =
       titleFromContent.length > 0
         ? titleFromContent.substring(0, 80)
