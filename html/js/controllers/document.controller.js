@@ -177,10 +177,16 @@ export const DocumentController = {
       const format = document.getElementById("formato").value;
       const btn = form.querySelector('button[type="submit"]');
       const outputBox = document.querySelector(".output-box");
+      const emptyState = document.getElementById("empty-state");
+
+      if (emptyState) emptyState.style.display = "none";
+      if (outputBox) {
+        outputBox.style.display = "block";
+        outputBox.classList.add("is-loading");
+      }
 
       btn.disabled = true;
       btn.textContent = "Generando...";
-      if (outputBox) outputBox.classList.add("is-loading");
 
       const outputContainer = document.createElement("div");
       outputContainer.className = "generated-content";
