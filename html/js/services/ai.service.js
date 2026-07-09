@@ -49,13 +49,13 @@ export class AIService {
     const token = getToken();
 
     try {
-      const res = await fetch("/api/generate-stream", {
+      const res = await fetch("/api/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ prompt, tone, format }),
+        body: JSON.stringify({ prompt, tone, format, stream: true }),
       });
 
       if (!res.ok) {

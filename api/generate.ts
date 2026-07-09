@@ -29,6 +29,7 @@ const PLAN_LIMITS: Record<string, { perDay: number }> = {
 };
 
 const API_TIMEOUT_MS = 20_000;
+const STREAM_TIMEOUT_MS = 25_000;
 
 function buildSystemPrompt(format: string, tone: string): string {
   const fmt = FORMAT_LABELS[format] || format;
@@ -42,6 +43,10 @@ Reglas estrictas:
 - El contenido debe ser sustancial, bien estructurado y util para el lector.
 - Usa un lenguaje natural y fluido, sin relleno ni cliches.
 - Devuelve solo el contenido, sin explicaciones ni metadatos.`;
+}
+
+function writeSSE(res: ServerResponse, data: Record<string, unknown>) {
+  res.write(`data: ${JSON.stringify(data)}\n\n`);
 }
 
 async function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
@@ -59,9 +64,13 @@ async function fetchWithTimeout(url: string, options: RequestInit): Promise<Resp
   }
 }
 
-function shouldFallback(res: Response): boolean {
-  return res.status === 429 || res.status === 402 || res.status >= 500;
+function shouldFallback(status: number): boolean {
+  return status === 429 || status === 402 || status >= 500;
 }
+
+// ---------------------------------------------------------------------------
+// Non-streaming providers (JSON response)
+// ---------------------------------------------------------------------------
 
 interface ProviderResult {
   content: string;
@@ -90,7 +99,7 @@ async function tryGroq(prompt: string, format: string, tone: string): Promise<Pr
     });
 
     if (!res.ok) {
-      if (shouldFallback(res)) {
+      if (shouldFallback(res.status)) {
         const text = await res.text();
         console.error(`Groq error (${res.status}):`, text);
         return null;
@@ -126,7 +135,7 @@ async function tryGemini(prompt: string, format: string, tone: string): Promise<
     );
 
     if (!res.ok) {
-      if (shouldFallback(res)) {
+      if (shouldFallback(res.status)) {
         const text = await res.text();
         console.error(`Gemini error (${res.status}):`, text);
         return null;
@@ -177,6 +186,213 @@ async function tryOpenAI(prompt: string, format: string, tone: string): Promise<
   }
 }
 
+// ---------------------------------------------------------------------------
+// Streaming providers (SSE)
+// ---------------------------------------------------------------------------
+
+async function fetchStream(url: string, options: RequestInit, timeoutMs: number): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function readStream(
+  res: ServerResponse,
+  reader: ReadableStreamDefaultReader<Uint8Array>,
+  parseChunk: (payload: string) => string,
+): Promise<string> {
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let fullContent = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const parts = buffer.split("\n");
+    buffer = parts.pop() || "";
+
+    for (const part of parts) {
+      const line = part.trim();
+      if (!line.startsWith("data: ")) continue;
+      const payload = line.slice(6).trim();
+      if (payload === "[DONE]") continue;
+      try {
+        const text = parseChunk(payload);
+        if (text) {
+          fullContent += text;
+          writeSSE(res, { type: "chunk", text });
+        }
+      } catch {
+        // skip malformed JSON
+      }
+    }
+  }
+
+  return fullContent;
+}
+
+async function streamGroq(
+  res: ServerResponse,
+  prompt: string,
+  format: string,
+  tone: string,
+): Promise<boolean> {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) return false;
+
+  try {
+    const httpRes = await fetchStream(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            { role: "system", content: buildSystemPrompt(format, tone) },
+            { role: "user", content: prompt },
+          ],
+          temperature: 0.7,
+          max_tokens: 2000,
+          stream: true,
+        }),
+      },
+      STREAM_TIMEOUT_MS,
+    );
+
+    if (!httpRes.ok) {
+      if (shouldFallback(httpRes.status)) {
+        const text = await httpRes.text();
+        console.error(`Groq stream error (${httpRes.status}):`, text);
+      }
+      return false;
+    }
+
+    const reader = httpRes.body?.getReader();
+    if (!reader) return false;
+
+    const fullContent = await readStream(res, reader, (payload) => {
+      const parsed = JSON.parse(payload);
+      return parsed.choices?.[0]?.delta?.content || "";
+    });
+
+    writeSSE(res, { type: "done", content: fullContent, provider: "groq", model: "llama-3.3-70b-versatile" });
+    return true;
+  } catch (err) {
+    console.error("Groq stream error:", err);
+    return false;
+  }
+}
+
+async function streamGemini(
+  res: ServerResponse,
+  prompt: string,
+  format: string,
+  tone: string,
+): Promise<boolean> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return false;
+
+  try {
+    const httpRes = await fetchStream(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse&key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: buildSystemPrompt(format, tone) }] },
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.7, maxOutputTokens: 2000 },
+        }),
+      },
+      STREAM_TIMEOUT_MS,
+    );
+
+    if (!httpRes.ok) {
+      if (shouldFallback(httpRes.status)) {
+        const text = await httpRes.text();
+        console.error(`Gemini stream error (${httpRes.status}):`, text);
+      }
+      return false;
+    }
+
+    const reader = httpRes.body?.getReader();
+    if (!reader) return false;
+
+    const fullContent = await readStream(res, reader, (payload) => {
+      const parsed = JSON.parse(payload);
+      return parsed.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    });
+
+    writeSSE(res, { type: "done", content: fullContent, provider: "gemini", model: "gemini-2.0-flash" });
+    return true;
+  } catch (err) {
+    console.error("Gemini stream error:", err);
+    return false;
+  }
+}
+
+async function streamOpenAI(
+  res: ServerResponse,
+  prompt: string,
+  format: string,
+  tone: string,
+): Promise<boolean> {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) return false;
+
+  try {
+    const httpRes = await fetchStream(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: [
+            { role: "system", content: buildSystemPrompt(format, tone) },
+            { role: "user", content: prompt },
+          ],
+          temperature: 0.7,
+          max_tokens: 2000,
+          stream: true,
+        }),
+      },
+      STREAM_TIMEOUT_MS,
+    );
+
+    if (!httpRes.ok) {
+      const text = await httpRes.text();
+      console.error(`OpenAI stream error (${httpRes.status}):`, text);
+      return false;
+    }
+
+    const reader = httpRes.body?.getReader();
+    if (!reader) return false;
+
+    const fullContent = await readStream(res, reader, (payload) => {
+      const parsed = JSON.parse(payload);
+      return parsed.choices?.[0]?.delta?.content || "";
+    });
+
+    writeSSE(res, { type: "done", content: fullContent, provider: "openai", model: "gpt-4o-mini" });
+    return true;
+  } catch (err) {
+    console.error("OpenAI stream error:", err);
+    return false;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Daily limit check
+// ---------------------------------------------------------------------------
+
 async function checkDailyLimit(db: ReturnType<typeof getDb>, userId: string, plan: string) {
   const limit = PLAN_LIMITS[plan]?.perDay || PLAN_LIMITS.free.perDay;
   const today = new Date();
@@ -190,7 +406,14 @@ async function checkDailyLimit(db: ReturnType<typeof getDb>, userId: string, pla
   return { used: count || 0, limit, remaining: limit - (count || 0) };
 }
 
-async function handler(req: VercelRequest & { validated?: { prompt: string; tone: string; format: string }; user?: { id: string; plan: string } }, res: ServerResponse) {
+// ---------------------------------------------------------------------------
+// Handler
+// ---------------------------------------------------------------------------
+
+async function handler(
+  req: VercelRequest & { validated?: { prompt: string; tone: string; format: string; stream: boolean }; user?: { id: string; plan: string } },
+  res: ServerResponse,
+) {
   if (handleOptions(req, res)) return;
   setCorsHeaders(req, res);
   setSecurityHeaders(res);
@@ -204,7 +427,7 @@ async function handler(req: VercelRequest & { validated?: { prompt: string; tone
   }
 
   try {
-    const { prompt, tone, format } = req.validated!;
+    const { prompt, tone, format, stream } = req.validated!;
     const db = getDb();
 
     const { remaining, limit } = await checkDailyLimit(db, req.user!.id, req.user!.plan);
@@ -218,6 +441,38 @@ async function handler(req: VercelRequest & { validated?: { prompt: string; tone
       return;
     }
 
+    // ---- STREAMING MODE ----
+    if (stream) {
+      res.writeHead(200, {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+      });
+
+      const streamProviders = [streamGroq, streamGemini, streamOpenAI];
+
+      let success = false;
+      for (const fn of streamProviders) {
+        success = await fn(res, prompt, format, tone);
+        if (success) break;
+      }
+
+      if (!success) {
+        writeSSE(res, { type: "error", message: "Todos los proveedores de IA fallaron. Intenta de nuevo mas tarde." });
+      }
+
+      res.end();
+
+      if (success) {
+        await db.from('generations').insert({
+          user_id: req.user!.id, prompt, tone, format,
+          model: "stream", tokens_used: 0,
+        });
+      }
+      return;
+    }
+
+    // ---- NON-STREAMING MODE ----
     const providers: (() => Promise<ProviderResult | null>)[] = [
       () => tryGroq(prompt, format, tone),
       () => tryGemini(prompt, format, tone),
@@ -238,10 +493,7 @@ async function handler(req: VercelRequest & { validated?: { prompt: string; tone
     }
 
     await db.from('generations').insert({
-      user_id: req.user!.id,
-      prompt,
-      tone,
-      format,
+      user_id: req.user!.id, prompt, tone, format,
       model: `${result.provider}:${result.model}`,
       tokens_used: result.tokens,
     });
