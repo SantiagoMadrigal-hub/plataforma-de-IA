@@ -1,4 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { WebSocket } from 'ws';
 
 let client: SupabaseClient | null = null;
 
@@ -9,6 +10,8 @@ export function getDb(): SupabaseClient {
   if (!url || !key) {
     throw new Error('SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY deben estar configuradas');
   }
-  client = createClient(url, key);
+  client = createClient(url, key, {
+    realtime: { transport: WebSocket },
+  });
   return client;
 }

@@ -24,11 +24,10 @@ export function sendError(res: ServerResponse, err: unknown): void {
     return;
   }
 
-  const msg = err instanceof Error ? err.message : 'Error interno del servidor';
   console.error('Error inesperado:', err);
   res.statusCode = 500;
   res.setHeader('Content-Type', 'application/json');
   res.end(JSON.stringify({
-    error: { code: 'INTERNAL_ERROR', message: msg }
+    error: { code: 'INTERNAL_ERROR', message: 'Error interno del servidor' }
   }));
 }
