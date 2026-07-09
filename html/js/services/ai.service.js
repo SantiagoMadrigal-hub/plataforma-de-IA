@@ -162,7 +162,7 @@ export class AIService {
     }
   }
 
-  async save(prompt, content, format) {
+  async save(prompt, content, format, tone) {
     const firstLine =
       content.split("\n").find((l) => l.trim().length > 0) || "";
     const titleFromContent = firstLine.replace(/^[#*\s]+/, "").replace(/[*\s]+$/, "").replace(/\*+/g, "").trim();
@@ -173,7 +173,7 @@ export class AIService {
           ? prompt.substring(0, 50) + "…"
           : prompt;
 
-    return this.docService.create({ title, type: format, content });
+    return this.docService.create({ title, type: format, content, tone });
   }
 
   async _fetchWithTimeout(url, options) {

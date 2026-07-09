@@ -23,8 +23,8 @@ export class DocumentService {
     return toCamelCase(await api('GET', `/api/documents/${id}`));
   }
 
-  async create({ title, type, content }) {
-    return toCamelCase(await api('POST', '/api/documents', { title, format: type, content }));
+  async create({ title, type, content, tone }) {
+    return toCamelCase(await api('POST', '/api/documents', { title, format: type, content, tone }));
   }
 
   async update(id, changes) {

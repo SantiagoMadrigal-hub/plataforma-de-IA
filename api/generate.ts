@@ -34,6 +34,15 @@ const STREAM_TIMEOUT_MS = 25_000;
 function buildSystemPrompt(format: string, tone: string): string {
   const fmt = FORMAT_LABELS[format] || format;
   const t = TONE_DESC[tone] || tone;
+  const formatConstraints: Record<string, string> = {
+    instagram: "Máximo 200 palabras. Post directo con gancho inicial, 2-3 ideas clave y cierre con pregunta para engagement.",
+    blog: "Entre 500 y 800 palabras. Introduccion, desarrollo con subtitulos, conclusion. Incluye datos o ejemplos concretos.",
+    youtube: "Guion listo para grabar con marcas de tiempo. Incluye intro, desarrollo, cierre con llamado a la accion.",
+    email: "Formato de correo: asunto, saludo, cuerpo persuasivo, despedida. Maximo 300 palabras.",
+    seo: "Estructura optimizada para SEO: H1, H2, H3, keywords, meta description sugerida. Minimo 400 palabras.",
+  };
+  const constraint = formatConstraints[format] || "";
+
   return `Eres un redactor experto. Genera contenido en formato ${fmt} con tono ${t}.
 
 Reglas estrictas:
@@ -43,7 +52,9 @@ Reglas estrictas:
 - Cada item de una lista debe empezar con "- " o su numero correspondiente.
 - El contenido debe ser sustancial, bien estructurado y util para el lector.
 - Usa un lenguaje natural y fluido, sin relleno ni cliches.
-- Devuelve solo el contenido, sin explicaciones ni metadatos.`;
+- Devuelve solo el contenido, sin explicaciones ni metadatos.
+
+Restriccion de formato: ${constraint}`;
 }
 
 function writeSSE(res: ServerResponse, data: Record<string, unknown>) {

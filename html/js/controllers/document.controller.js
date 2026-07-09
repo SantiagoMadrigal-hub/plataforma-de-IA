@@ -209,13 +209,14 @@ export const DocumentController = {
             outputContainer.innerHTML = renderMarkdown(fullContent);
           }
         },
-        onDone: async () => {
-          try {
-            const saved = await window.ContentFlowApp.services.ai.save(
-              prompt,
-              fullContent,
-              format,
-            );
+          onDone: async () => {
+            try {
+              const saved = await window.ContentFlowApp.services.ai.save(
+                prompt,
+                fullContent,
+                format,
+                tone,
+              );
             if (outputBox) {
               outputBox.classList.remove("is-loading");
               const bodyContent = stripDuplicateTitle(saved.content, saved.title);
