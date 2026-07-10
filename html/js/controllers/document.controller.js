@@ -209,21 +209,32 @@ export const DocumentController = {
             outputContainer.innerHTML = renderMarkdown(fullContent);
           }
         },
-          onDone: async () => {
-            try {
-              const saved = await window.ContentFlowApp.services.ai.save(
-                prompt,
-                fullContent,
-                format,
-                tone,
-              );
+        onDone: async () => {
+          try {
+            const saved = await window.ContentFlowApp.services.ai.save(
+              prompt,
+              fullContent,
+              format,
+              tone,
+            );
             if (outputBox) {
               outputBox.classList.remove("is-loading");
-              const bodyContent = stripDuplicateTitle(saved.content, saved.title);
-              outputBox.innerHTML = `
-                            <h3>${escapeHtml(saved.title)}</h3>
-                            <div class="generated-content">${renderMarkdown(bodyContent)}</div>
-                        `;
+              outputBox.style.display = "none";
+            }
+
+            const editorContainer = document.getElementById("editor-mount-container");
+            const editorMount = document.getElementById("document-editor-mount");
+            if (editorContainer && editorMount) {
+              editorContainer.style.display = "block";
+              editorMount.setAttribute("data-document-id", saved.id);
+              editorMount.setAttribute("data-mode", "edit");
+              editorMount.setAttribute("data-initial-content", saved.content);
+
+              if (window.ContentFlowApp && window.ContentFlowApp.mountNewComponents) {
+                setTimeout(() => {
+                  window.ContentFlowApp.mountNewComponents();
+                }, 100);
+              }
             }
           } catch (saveErr) {
             if (outputBox) {
