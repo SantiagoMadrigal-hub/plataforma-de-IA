@@ -1,0 +1,203 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-16);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}
+
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+  text-align: center;
+  color: var(--color-error);
+}
+
+.error h3 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+
+.error p {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.error button {
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.error button:hover {
+  background: var(--color-primary-hover);
+}
+
+.editorWrapper {
+  position: relative;
+  flex: 1;
+  min-height: 300px;
+}
+
+.editorContent {
+  min-height: 300px;
+}
+
+.editorContent .tiptap {
+  outline: none;
+  padding: var(--space-4) var(--space-6);
+  min-height: 300px;
+}
+
+.editorContent .tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--color-text-tertiary);
+  pointer-events: none;
+  height: 0;
+}
+
+.editorContent .tiptap h1 {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  margin: var(--space-6) 0 var(--space-4);
+  color: var(--color-text-primary);
+}
+
+.editorContent .tiptap h2 {
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  margin: var(--space-5) 0 var(--space-3);
+  color: var(--color-text-primary);
+}
+
+.editorContent .tiptap h3 {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  margin: var(--space-4) 0 var(--space-3);
+  color: var(--color-text-primary);
+}
+
+.editorContent .tiptap p {
+  margin: 0 0 var(--space-3);
+  line-height: 1.7;
+  color: var(--color-text-primary);
+}
+
+.editorContent .tiptap ul,
+.editorContent .tiptap ol {
+  padding-left: var(--space-6);
+  margin: 0 0 var(--space-3);
+}
+
+.editorContent .tiptap li {
+  margin-bottom: var(--space-2);
+  line-height: 1.6;
+}
+
+.editorContent .tiptap blockquote {
+  border-left: 3px solid var(--color-primary);
+  margin: var(--space-4) 0;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-primary-soft);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.editorContent .tiptap pre {
+  background: var(--bg-page);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin: var(--space-4) 0;
+  overflow-x: auto;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.editorContent .tiptap code {
+  background: var(--color-primary-soft);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.9em;
+  color: var(--color-primary);
+}
+
+.editorContent .tiptap pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+
+.editorContent .tiptap hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: var(--space-6) 0;
+}
+
+.editorContent .tiptap img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+  margin: var(--space-4) 0;
+}
+
+.editorContent .tiptap a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.editorContent .tiptap a:hover {
+  color: var(--color-primary-hover);
+}
+
+.editorContent .tiptap ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+}
+
+.editorContent .tiptap ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.editorContent .tiptap ul[data-type="taskList"] li label {
+  margin-top: 4px;
+}
+
+.editorContent .tiptap ul[data-type="taskList"] li input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary);
+}
+
+@media (max-width: 640px) {
+  .editorContent .tiptap {
+    padding: var(--space-3) var(--space-4);
+  }
+}
