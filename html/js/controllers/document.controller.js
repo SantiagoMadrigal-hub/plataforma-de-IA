@@ -226,6 +226,7 @@ export const DocumentController = {
             const editorMount = document.getElementById("document-editor-mount");
             if (editorContainer && editorMount) {
               editorContainer.style.display = "block";
+              editorMount.setAttribute("data-component", "DocumentEditor");
               editorMount.setAttribute("data-document-id", saved.id);
               editorMount.setAttribute("data-mode", "edit");
               editorMount.setAttribute("data-initial-content", saved.content);
