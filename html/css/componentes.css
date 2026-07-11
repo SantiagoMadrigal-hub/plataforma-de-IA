@@ -758,10 +758,10 @@ textarea.form-input {
   margin-top: var(--space-4);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  overflow-x: hidden;
   background: var(--bg-surface);
   max-height: 60vh;
   overflow-y: auto;
+  overflow-x: hidden;
   scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: #4f46e5 transparent;
@@ -782,9 +782,5 @@ textarea.form-input {
 
 .editor-mount-container::-webkit-scrollbar-thumb:hover {
   background: #6366f1;
-}
-
-.editor-mount-container .react-mount {
-  min-height: 400px;
 }
 

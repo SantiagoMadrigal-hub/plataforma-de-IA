@@ -4,7 +4,6 @@
   background: var(--bg-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  overflow: hidden;
 }
 
 .loading {
@@ -57,10 +56,6 @@
   position: relative;
   flex: 1;
   min-height: 300px;
-  overflow-y: auto;
-  max-height: calc(60vh - 52px);
-  scrollbar-width: thin;
-  scrollbar-color: #4f46e5 transparent;
 }
 
 .editorContent {
