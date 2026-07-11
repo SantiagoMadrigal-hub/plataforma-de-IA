@@ -1094,7 +1094,40 @@ footer h3, footer p {
   display: grid;
   grid-template-columns: 1fr 1.5fr; /* Resultado más ancho: guía la mirada input → output */
   gap: 4rem;
-  align-items: stretch;
+  align-items: start;
+}
+
+.generator-container.editor-active .results-panel {
+  max-height: 60vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #4f46e5 transparent;
+}
+
+.generator-container.editor-active .results-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.generator-container.editor-active .results-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.generator-container.editor-active .results-panel::-webkit-scrollbar-thumb {
+  background: #4f46e5;
+  border-radius: 3px;
+}
+
+.generator-container.editor-active .results-panel::-webkit-scrollbar-thumb:hover {
+  background: #6366f1;
+}
+
+.generator-container.editor-active .results-panel h2 {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--color-white);
+  margin-bottom: 0;
+  padding-bottom: 0.75rem;
 }
 
 /* Paneles base blancos para albergar los contenidos */
@@ -2066,6 +2099,14 @@ body.dark-theme {
 .dark-theme .profile-panel h2 {
   color: #f4f4f5;
   border-bottom-color: #1f1f1f;
+}
+
+.generator-container.editor-active .results-panel h2 {
+  background: var(--color-white);
+}
+
+.dark-theme .generator-container.editor-active .results-panel h2 {
+  background: var(--bg-surface);
 }
 
 .dark-theme .profile-panel {

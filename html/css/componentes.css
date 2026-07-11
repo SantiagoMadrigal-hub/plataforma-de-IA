@@ -759,28 +759,9 @@ textarea.form-input {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--bg-surface);
-  max-height: 60vh;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-  scrollbar-width: thin;
-  scrollbar-color: #4f46e5 transparent;
 }
 
-.editor-mount-container::-webkit-scrollbar {
-  width: 6px;
-}
-
-.editor-mount-container::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.editor-mount-container::-webkit-scrollbar-thumb {
-  background: #4f46e5;
-  border-radius: 3px;
-}
-
-.editor-mount-container::-webkit-scrollbar-thumb:hover {
-  background: #6366f1;
+.editor-mount-container .react-mount {
+  min-height: 400px;
 }
 

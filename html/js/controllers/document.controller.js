@@ -226,6 +226,7 @@ export const DocumentController = {
             const editorMount = document.getElementById("document-editor-mount");
             if (editorContainer && editorMount) {
               editorContainer.style.display = "block";
+              document.querySelector(".generator-container")?.classList.add("editor-active");
               editorMount.classList.add("react-mount");
               editorMount.setAttribute("data-component", "DocumentEditor");
               editorMount.setAttribute("data-document-id", saved.id);
