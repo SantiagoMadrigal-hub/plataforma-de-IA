@@ -8,13 +8,13 @@
   border: none;
   border-radius: var(--radius-sm);
   background: transparent;
-  color: var(--color-text-secondary);
+  color: #a1a1aa;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .button:hover:not(:disabled) {
-  background: var(--color-primary-soft);
+  background: rgba(79, 70, 229, 0.15);
   color: var(--color-primary);
 }
 

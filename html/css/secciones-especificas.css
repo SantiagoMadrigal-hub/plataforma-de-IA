@@ -2141,6 +2141,11 @@ body.dark-theme {
 .dark-theme .profile-panel {
   background-color: var(--bg-surface);
   border-color: #1f1f1f;
+}
+
+/* Paneles del generador: sin sombra en dark theme */
+.dark-theme .generator-panel,
+.dark-theme .results-panel {
   box-shadow: none;
 }
 

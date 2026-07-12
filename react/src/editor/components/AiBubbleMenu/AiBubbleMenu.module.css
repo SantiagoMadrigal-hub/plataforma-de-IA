@@ -29,9 +29,9 @@
   margin-top: var(--space-2);
   width: 300px;
   background: var(--bg-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   z-index: 50;
 }
 
@@ -40,10 +40,10 @@
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-3);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   font-size: var(--text-sm);
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: #f4f4f5;
 }
 
 .closeButton {
@@ -56,15 +56,15 @@
   justify-content: center;
   background: none;
   border: none;
-  color: var(--color-text-secondary);
+  color: #a1a1aa;
   cursor: pointer;
   border-radius: var(--radius-sm);
   font-size: 18px;
 }
 
 .closeButton:hover {
-  background: var(--color-primary-soft);
-  color: var(--color-text-primary);
+  background: rgba(79, 70, 229, 0.15);
+  color: #f4f4f5;
 }
 
 .body {
@@ -75,9 +75,9 @@
   width: 100%;
   padding: var(--space-2) var(--space-3);
   background: var(--bg-page);
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-md);
-  color: var(--color-text-primary);
+  color: #e4e4e7;
   font-size: var(--text-sm);
   outline: none;
   transition: border-color var(--transition-fast);
@@ -88,7 +88,7 @@
 }
 
 .input::placeholder {
-  color: var(--color-text-tertiary);
+  color: #71717a;
 }
 
 .error {
@@ -111,16 +111,16 @@
 .cancelButton {
   padding: var(--space-2) var(--space-3);
   background: none;
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-md);
-  color: var(--color-text-secondary);
+  color: #a1a1aa;
   font-size: var(--text-sm);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .cancelButton:hover:not(:disabled) {
-  background: var(--color-primary-soft);
+  background: rgba(79, 70, 229, 0.15);
   border-color: var(--color-primary);
   color: var(--color-primary);
 }
