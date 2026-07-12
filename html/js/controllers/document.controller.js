@@ -280,6 +280,11 @@ function ensureGeneratedContentStyles() {
         .dark-theme .generated-content strong {
             color: #f4f4f5;
         }
+        .dark-theme .generated-content h2,
+        .dark-theme .generated-content h3,
+        .dark-theme .generated-content h4 {
+            color: #f4f4f5;
+        }
         .dark-theme .generated-content blockquote {
             background: rgba(79, 70, 229, 0.08);
         }
