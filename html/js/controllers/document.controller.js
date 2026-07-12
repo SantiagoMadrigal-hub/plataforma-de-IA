@@ -187,25 +187,136 @@ function ensureGeneratedContentStyles() {
   const style = document.createElement("style");
   style.id = "generated-content-styles";
   style.textContent = `
-        .generated-content { line-height: 1.7; }
-        .generated-content h2 { font-size: 1.4em; margin: 24px 0 12px; font-weight: 700; }
-        .generated-content h3 { font-size: 1.2em; margin: 20px 0 10px; font-weight: 600; }
-        .generated-content h4 { font-size: 1.05em; margin: 16px 0 8px; font-weight: 600; }
-        .generated-content p { margin: 0 0 14px; }
-        .generated-content ul, .generated-content ol { margin: 0 0 14px; padding-left: 22px; }
-        .generated-content li { margin-bottom: 6px; }
-        .generated-content strong { font-weight: 700; }
-        .generated-content em { font-style: italic; }
+        .generated-content {
+            line-height: 1.75;
+            max-width: 72ch;
+            font-size: 0.95rem;
+        }
+        .generated-content h2 {
+            font-size: 1.35em;
+            margin: 28px 0 14px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+        .generated-content h3 {
+            font-size: 1.15em;
+            margin: 24px 0 12px;
+            font-weight: 600;
+            line-height: 1.35;
+        }
+        .generated-content h4 {
+            font-size: 1.05em;
+            margin: 20px 0 10px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+        .generated-content p {
+            margin: 0 0 18px;
+        }
+        .generated-content ul, .generated-content ol {
+            margin: 0 0 18px;
+            padding-left: 24px;
+        }
+        .generated-content li {
+            margin-bottom: 10px;
+            line-height: 1.65;
+        }
+        .generated-content li:last-child {
+            margin-bottom: 0;
+        }
+        .generated-content strong {
+            font-weight: 700;
+            color: inherit;
+        }
+        .generated-content em {
+            font-style: italic;
+        }
         .generated-content code {
-            background: rgba(255,255,255,0.08);
+            background: rgba(0, 0, 0, 0.06);
             padding: 2px 6px;
             border-radius: 4px;
-            font-size: 0.9em;
+            font-size: 0.875em;
+            font-family: 'SF Mono', Monaco, Consolas, monospace;
+        }
+        .generated-content pre {
+            background: rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            overflow-x: auto;
+        }
+        .generated-content pre code {
+            background: none;
+            padding: 0;
+            font-size: 0.85em;
         }
         .generated-content hr {
             border: none;
-            border-top: 1px solid rgba(255,255,255,0.12);
-            margin: 20px 0;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            margin: 24px 0;
+        }
+        .generated-content blockquote {
+            border-left: 3px solid var(--color-primary, #4F46E5);
+            padding: 12px 16px;
+            margin: 16px 0;
+            background: rgba(79, 70, 229, 0.04);
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            color: inherit;
+        }
+
+        /* Dark theme overrides */
+        .dark-theme .generated-content code {
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .dark-theme .generated-content pre {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+        .dark-theme .generated-content hr {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .dark-theme .generated-content strong {
+            color: #f4f4f5;
+        }
+        .dark-theme .generated-content blockquote {
+            background: rgba(79, 70, 229, 0.08);
+        }
+
+        /* Responsive: mobile */
+        @media (max-width: 768px) {
+            .generated-content {
+                font-size: 0.9rem;
+                line-height: 1.7;
+            }
+            .generated-content h2 {
+                font-size: 1.2em;
+                margin: 20px 0 10px;
+            }
+            .generated-content h3 {
+                font-size: 1.1em;
+                margin: 18px 0 8px;
+            }
+            .generated-content h4 {
+                font-size: 1em;
+                margin: 16px 0 8px;
+            }
+            .generated-content p {
+                margin-bottom: 14px;
+            }
+            .generated-content ul, .generated-content ol {
+                margin-bottom: 14px;
+                padding-left: 20px;
+            }
+            .generated-content li {
+                margin-bottom: 8px;
+            }
+            .generated-content pre {
+                padding: 12px;
+                margin: 12px 0;
+                font-size: 0.85em;
+            }
         }
     `;
   document.head.appendChild(style);

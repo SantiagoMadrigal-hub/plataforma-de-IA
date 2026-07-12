@@ -1167,7 +1167,7 @@ footer h3, footer p {
 .output-box {
   position: relative;
   background-color: var(--color-background);
-  padding: 2rem;
+  padding: 2.5rem;
   border-radius: 12px;
   margin-bottom: 1.5rem;
   min-height: 200px;
@@ -1206,8 +1206,8 @@ footer h3, footer p {
   position: sticky;
   bottom: 0;
   display: block;
-  height: 48px;
-  margin: -48px -2rem 0;
+  height: 32px;
+  margin: -32px -2.5rem 0;
   background: linear-gradient(transparent, var(--color-background));
   pointer-events: none;
 }
@@ -1218,7 +1218,7 @@ footer h3, footer p {
 
 .output-box h3 {
   font-size: 1.125rem;
-  font-weight: 500;
+  font-weight: 600;
   margin-bottom: 0.75rem;
 }
 
@@ -1235,7 +1235,7 @@ footer h3, footer p {
 .output-box.is-loading::before {
   content: '';
   position: absolute;
-  inset: 2rem;
+  inset: 2.5rem;
   background: linear-gradient(90deg, transparent 0%, rgba(79, 70, 229, 0.06) 50%, transparent 100%);
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.5s ease-in-out infinite;

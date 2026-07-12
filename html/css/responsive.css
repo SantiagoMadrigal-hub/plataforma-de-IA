@@ -109,6 +109,24 @@
     gap: 0.75rem;
   }
 
+  /* Output box: reduce padding en móvil */
+  .output-box {
+    padding: 1.5rem;
+  }
+
+  .output-box::after {
+    height: 24px;
+    margin: -24px -1.5rem 0;
+  }
+
+  .output-box.is-loading::before {
+    inset: 1.5rem;
+  }
+
+  .output-box h3 {
+    font-size: 1rem;
+  }
+
   /* Dashboard: sidebar se vuelve top bar colapsable */
   .dashboard-layout {
     flex-direction: column;
