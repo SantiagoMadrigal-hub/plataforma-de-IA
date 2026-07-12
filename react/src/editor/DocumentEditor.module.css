@@ -55,13 +55,11 @@
 .editorWrapper {
   position: relative;
   flex: 1;
-  min-height: 300px;
+  min-height: 0;
 }
 
 .editorContent {
   min-height: 300px;
-  max-height: 60vh;
-  overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #4f46e5 transparent;
 }
@@ -85,7 +83,7 @@
 
 .editorContent .tiptap {
   outline: none;
-  padding: var(--space-4) var(--space-6);
+  padding: var(--space-6) var(--space-8);
   min-height: 300px;
 }
 
