@@ -6,6 +6,65 @@ function escapeHtml(str) {
     .replace(/"/g, "&quot;");
 }
 
+function showToast(message, type) {
+  type = type || "info";
+  var container = document.getElementById("toast-container");
+  if (!container) return;
+
+  var toast = document.createElement("div");
+  toast.className = "toast toast--" + type;
+  toast.textContent = message;
+  container.appendChild(toast);
+
+  setTimeout(function () {
+    toast.classList.add("toast-leaving");
+    setTimeout(function () {
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 200);
+  }, 3000);
+}
+
+function restoreFormState() {
+  try {
+    var saved = localStorage.getItem("contentflow_generator_form");
+    if (!saved) return;
+    var data = JSON.parse(saved);
+    var idea = document.getElementById("idea");
+    var tono = document.getElementById("tono");
+    var formato = document.getElementById("formato");
+    if (idea && data.idea) idea.value = data.idea;
+    if (tono && data.tono) tono.value = data.tono;
+    if (formato && data.formato) formato.value = data.formato;
+  } catch (_) {}
+}
+
+function saveFormState() {
+  try {
+    var idea = document.getElementById("idea");
+    var tono = document.getElementById("tono");
+    var formato = document.getElementById("formato");
+    localStorage.setItem(
+      "contentflow_generator_form",
+      JSON.stringify({
+        idea: idea ? idea.value : "",
+        tono: tono ? tono.value : "",
+        formato: formato ? formato.value : "",
+      })
+    );
+  } catch (_) {}
+}
+
+function updateCharCounter() {
+  var textarea = document.getElementById("idea");
+  var counter = document.getElementById("char-counter");
+  if (!textarea || !counter) return;
+  var len = textarea.value.length;
+  var max = parseInt(textarea.getAttribute("maxlength"), 10) || 500;
+  counter.textContent = len + " / " + max;
+  counter.classList.toggle("is-near-limit", len >= max * 0.8 && len < max);
+  counter.classList.toggle("is-at-limit", len >= max);
+}
+
 // El título mostrado (<h3>) se deriva de la primera línea del contenido
 // (ver ai.service.js -> save()), así que casi siempre esa primera línea
 // queda duplicada dentro del cuerpo. La quitamos antes de renderizar.
@@ -168,6 +227,27 @@ export const DocumentController = {
     if (!form) return;
 
     ensureGeneratedContentStyles();
+    restoreFormState();
+    updateCharCounter();
+
+    var textarea = document.getElementById("idea");
+    if (textarea) {
+      textarea.addEventListener("input", function () {
+        updateCharCounter();
+        saveFormState();
+      });
+      textarea.addEventListener("keydown", function (e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+          e.preventDefault();
+          form.requestSubmit();
+        }
+      });
+    }
+
+    var tono = document.getElementById("tono");
+    var formato = document.getElementById("formato");
+    if (tono) tono.addEventListener("change", saveFormState);
+    if (formato) formato.addEventListener("change", saveFormState);
 
     form.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -178,15 +258,18 @@ export const DocumentController = {
       const btn = form.querySelector('button[type="submit"]');
       const outputBox = document.querySelector(".output-box");
       const emptyState = document.getElementById("empty-state");
+      const actionBlock = document.getElementById("action-block");
 
       if (emptyState) emptyState.style.display = "none";
+      if (actionBlock) actionBlock.style.display = "none";
       if (outputBox) {
         outputBox.style.display = "block";
         outputBox.classList.add("is-loading");
       }
 
       btn.disabled = true;
-      btn.textContent = "Generando...";
+      btn.classList.add("btn-loading");
+      btn.innerHTML = '<span class="btn-text">Generando...</span>';
 
       const outputContainer = document.createElement("div");
       outputContainer.className = "generated-content";
@@ -199,6 +282,7 @@ export const DocumentController = {
 
       function finalize() {
         btn.disabled = false;
+        btn.classList.remove("btn-loading");
         btn.textContent = "Generar contenido";
       }
 
@@ -221,6 +305,7 @@ export const DocumentController = {
               outputBox.classList.remove("is-loading");
               outputBox.style.display = "none";
             }
+            if (actionBlock) actionBlock.style.display = "block";
 
             const editorContainer = document.getElementById("editor-mount-container");
             const editorMount = document.getElementById("document-editor-mount");
@@ -252,6 +337,7 @@ export const DocumentController = {
             outputBox.classList.remove("is-loading");
             outputBox.innerHTML = `<p class="error-message">Error al generar el contenido: ${escapeHtml(err.message)}. Por favor, intentalo de nuevo.</p>`;
           }
+          if (actionBlock) actionBlock.style.display = "block";
           finalize();
         },
       });
@@ -275,7 +361,12 @@ export const DocumentController = {
         if (action === "copy") {
           navigator.clipboard
             .writeText(`${title}\n\n${content}`)
-            .catch(() => alert("No se pudo copiar"));
+            .then(function () {
+              showToast("Texto copiado al portapapeles", "success");
+            })
+            .catch(function () {
+              showToast("No se pudo copiar el texto", "error");
+            });
         } else if (action === "pdf") {
           this.downloadAsPDF(title, content);
         } else if (action === "word") {

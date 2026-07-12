@@ -98,7 +98,9 @@
               rows="6"
               placeholder="Ejemplo: Crea un guion de YouTube sobre productividad."
               required
+              maxlength="500"
             ></textarea>
+            <span class="char-counter" id="char-counter">0 / 500</span>
           </div>
 
           <div class="form-group">
@@ -114,11 +116,12 @@
           <div class="form-group">
             <label for="formato" class="form-label">Formato</label>
             <select name="formato" id="formato" class="form-input">
+              <option value="blog">Articulo de blog</option>
               <option value="instagram">Post para Instagram</option>
-              <option value="blog">Artículo de blog</option>
-              <option value="youtube">Guion de YouTube</option>
               <option value="email">Email</option>
               <option value="seo">Contenido SEO</option>
+              <option value="newsletter">Newsletter</option>
+              <option value="linkedin">Post para LinkedIn</option>
             </select>
           </div>
 
@@ -158,7 +161,7 @@
           <p>Tu contenido generado aparecerá aquí</p>
         </div>
 
-        <div class="action-block">
+        <div class="action-block" id="action-block" style="display: none">
           <h3>Acciones rápidas</h3>
           <div class="action-buttons">
             <button type="button" class="btn-outline" data-action="copy">
@@ -237,5 +240,7 @@
         </div>
       </section>
     </main>
+
+    <div class="toast-container" id="toast-container"></div>
   </body>
 </html>

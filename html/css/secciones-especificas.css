@@ -1330,6 +1330,24 @@ footer h3, footer p {
   color: #52525b;
 }
 
+/* Character counter for textarea */
+.char-counter {
+  display: block;
+  text-align: right;
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+  margin-top: 4px;
+  transition: color 0.2s ease;
+}
+
+.char-counter.is-near-limit {
+  color: var(--color-warning, #eab308);
+}
+
+.char-counter.is-at-limit {
+  color: var(--color-error, #ef4444);
+}
+
 /*********************************SETTING****************************************/
 
 /* ==========================================================================
