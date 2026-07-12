@@ -1121,7 +1121,7 @@ footer h3, footer p {
   background: #6366f1;
 }
 
-.generator-container.editor-active .results-panel h2 {
+.generator-container.editor-active .results-panel .generated-content h2 {
   position: sticky;
   top: 0;
   z-index: 10;
@@ -1155,7 +1155,7 @@ footer h3, footer p {
   padding-bottom: 0.75rem;
 }
 
-.results-panel h2 {
+.results-panel .generated-content h2 {
   font-size: 1.3rem;
   font-weight: 600;
   color: var(--color-text-primary);
@@ -2150,7 +2150,7 @@ body.dark-theme {
 }
 
 .dark-theme .generator-panel h2,
-.dark-theme .results-panel h2,
+.dark-theme .results-panel .generated-content h2,
 .dark-theme .history-panel h2,
 .dark-theme .settings-panel h2,
 .dark-theme .profile-panel h2 {
@@ -2158,11 +2158,11 @@ body.dark-theme {
   border-bottom-color: #1f1f1f;
 }
 
-.generator-container.editor-active .results-panel h2 {
+.generator-container.editor-active .results-panel .generated-content h2 {
   background: var(--color-white);
 }
 
-.dark-theme .generator-container.editor-active .results-panel h2 {
+.dark-theme .generator-container.editor-active .results-panel .generated-content h2 {
   background: var(--bg-surface);
 }
 

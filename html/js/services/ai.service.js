@@ -232,4 +232,27 @@ export class AIService {
     const data = await api('POST', AI_PROXY_ENDPOINT, { prompt, tone, format });
     return data.content;
   }
+
+  async rewriteText(selectedText, instruction, tone, format) {
+    const userPrompt = `Eres un editor de texto experto. Tu tarea es reescribir el texto seleccionado por el usuario mejorando su calidad, claridad y coherencia.
+    
+REGLAS ESTRICTAS:
+- Devuelve SOLO el texto reescrito, sin explicaciones ni comentarios adicionales.
+- Preserva el idioma del texto original.
+- Mantén el tono del documento.
+- No añadas emojis ni caracteres decorativos.
+- No incluyas formato Markdown a menos que el texto original lo tenga.
+- El resultado debe ser un fragmento de texto, no un documento completo.
+
+${instruction ? `Instrucción adicional: ${instruction}\n\n` : ''}Texto a reescribir:
+${selectedText}`;
+
+    const data = await api('POST', AI_PROXY_ENDPOINT, {
+      prompt: userPrompt,
+      tone: tone || 'profesional',
+      format: format || 'blog',
+      stream: false,
+    });
+    return data.content;
+  }
 }

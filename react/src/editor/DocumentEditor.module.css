@@ -60,6 +60,7 @@
 
 .editorContent {
   min-height: 300px;
+  max-height: 60vh;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #4f46e5 transparent;
