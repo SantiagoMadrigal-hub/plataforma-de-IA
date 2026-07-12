@@ -1155,6 +1155,15 @@ footer h3, footer p {
   padding-bottom: 0.75rem;
 }
 
+.results-panel > h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid var(--color-background);
+  padding-bottom: 0.75rem;
+}
+
 .results-panel .generated-content h2 {
   font-size: 1.3rem;
   font-weight: 600;
@@ -2151,6 +2160,8 @@ body.dark-theme {
 
 .dark-theme .generator-panel h2,
 .dark-theme .results-panel .generated-content h2,
+.dark-theme .results-panel .generated-content h3,
+.dark-theme .results-panel .generated-content h4,
 .dark-theme .history-panel h2,
 .dark-theme .settings-panel h2,
 .dark-theme .profile-panel h2 {
@@ -2164,6 +2175,11 @@ body.dark-theme {
 
 .dark-theme .generator-container.editor-active .results-panel .generated-content h2 {
   background: var(--bg-surface);
+}
+
+.dark-theme .results-panel > h2 {
+  color: #f4f4f5;
+  border-bottom-color: #1f1f1f;
 }
 
 .dark-theme .editor-mount-container {
