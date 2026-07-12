@@ -4,6 +4,8 @@ const ALLOWED_ORIGINS: string[] = [
   'http://localhost:3000',
   'http://localhost:5173',
   'https://contentflow.vercel.app',
+  'https://getlexora.co',
+  'https://www.getlexora.co',
   ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
 ];
 

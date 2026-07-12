@@ -30,7 +30,12 @@
     <div class="dashboard-layout">
         
         <aside class="sidebar">
-            <a href="dashboard.html" style="text-decoration: none;"><h2 class="sidebar-logo">Lexora</h2></a>
+            <div class="sidebar-top">
+                <a href="dashboard.html" style="text-decoration: none;"><h2 class="sidebar-logo">Lexora</h2></a>
+                <button class="sidebar-toggle" aria-label="Abrir menú" aria-expanded="false">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
             <nav class="sidebar-nav">
                 <ul>
                     <li><a href="dashboard.html" class="active">Dashboard</a></li>
@@ -93,6 +98,24 @@
     <script src="js/vendor/glide.min.js"></script>
     <script src="js/vendor/aos.js"></script>
     <script type="module" src="js/main.js"></script>
+    <script>
+      (function() {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('.sidebar');
+        if (!toggle || !sidebar) return;
+        toggle.addEventListener('click', function() {
+          var expanded = this.getAttribute('aria-expanded') === 'true';
+          this.setAttribute('aria-expanded', String(!expanded));
+          sidebar.classList.toggle('sidebar--open');
+        });
+        document.addEventListener('click', function(e) {
+          if (sidebar.classList.contains('sidebar--open') && !sidebar.contains(e.target)) {
+            sidebar.classList.remove('sidebar--open');
+            toggle.setAttribute('aria-expanded', 'false');
+          }
+        });
+      })();
+    </script>
 </body>
 </html>
 
