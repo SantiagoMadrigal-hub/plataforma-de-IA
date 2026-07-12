@@ -2164,11 +2164,6 @@ body.dark-theme {
   background: transparent;
 }
 
-.dark-theme .output-box {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
 .dark-theme .profile-panel {
   border-color: rgba(255, 255, 255, 0.08);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
@@ -2263,16 +2258,17 @@ body.dark-theme {
 
 /* Output box en modo oscuro */
 .dark-theme .output-box {
-  background-color: #111111;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: none;
 }
 
 .dark-theme .output-box::after {
-  background: linear-gradient(transparent, #111111);
+  background: linear-gradient(transparent, var(--bg-surface));
 }
 
 .dark-theme .output-box:hover {
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+  box-shadow: none;
 }
 
 .dark-theme .format-badge {
