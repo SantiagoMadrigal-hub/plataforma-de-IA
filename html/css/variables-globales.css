@@ -6,6 +6,7 @@
 
 :root {
   /* --- Colores primarios --- */
+  --color-white: #FFFFFF;
   --color-primary: #4F46E5;
   --color-primary-hover: #4338CA;
   --color-primary-soft: rgba(79, 70, 229, 0.08);

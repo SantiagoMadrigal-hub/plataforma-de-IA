@@ -2141,6 +2141,7 @@ body.dark-theme {
 .dark-theme .profile-panel {
   background-color: var(--bg-surface);
   border-color: #1f1f1f;
+  box-shadow: none;
 }
 
 .dark-theme .generator-panel h2,
