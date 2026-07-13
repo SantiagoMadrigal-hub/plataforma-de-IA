@@ -33,11 +33,19 @@ export function AiBubbleMenu({ editor }: AiBubbleMenuProps) {
   const [isRewriting, setIsRewriting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [triggerStyle, setTriggerStyle] = useState<React.CSSProperties>({});
+  const [, forceUpdate] = useState(0);
   const { rewriteSelection, clearError } = useAiRewrite(editor);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
   if (!editor) return null;
+
+  // Subscribe to selection changes to trigger re-renders
+  useEffect(() => {
+    const handler = () => forceUpdate(n => n + 1);
+    editor.on('selectionUpdate', handler);
+    return () => editor.off('selectionUpdate', handler);
+  }, [editor]);
 
   const hasSelection = editor.state.selection.from !== editor.state.selection.to;
 
