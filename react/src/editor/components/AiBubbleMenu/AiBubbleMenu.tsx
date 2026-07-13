@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import type { Editor } from '@tiptap/core';
 import { useAiRewrite } from '../../hooks/useAiRewrite';
 import styles from './AiBubbleMenu.module.css';
@@ -32,8 +32,14 @@ export function AiBubbleMenu({ editor }: AiBubbleMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isRewriting, setIsRewriting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [triggerStyle, setTriggerStyle] = useState<React.CSSProperties>({});
   const { rewriteSelection, clearError } = useAiRewrite(editor);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  if (!editor) return null;
+
+  const hasSelection = editor.state.selection.from !== editor.state.selection.to;
 
   useEffect(() => {
     if (isOpen && triggerRef.current) {
@@ -41,9 +47,29 @@ export function AiBubbleMenu({ editor }: AiBubbleMenuProps) {
     }
   }, [isOpen]);
 
-  if (!editor) return null;
+  // Position trigger button at selection coordinates
+  useLayoutEffect(() => {
+    if (!hasSelection || isOpen) {
+      setTriggerStyle({ display: 'none' });
+      return;
+    }
 
-  const hasSelection = editor.state.selection.from !== editor.state.selection.to;
+    try {
+      const { from } = editor.state.selection;
+      const coords = editor.view.coordsAtPos(from);
+      const editorCoords = editor.view.dom.getBoundingClientRect();
+
+      setTriggerStyle({
+        display: 'flex',
+        position: 'absolute',
+        left: `${coords.left - editorCoords.left}px`,
+        top: `${coords.top - editorCoords.top - 44}px`,
+        zIndex: 100,
+      });
+    } catch {
+      setTriggerStyle({ display: 'none' });
+    }
+  }, [editor, isOpen, hasSelection]);
 
   const handleAction = async (actionInstruction: string) => {
     setIsRewriting(true);
@@ -67,7 +93,7 @@ export function AiBubbleMenu({ editor }: AiBubbleMenuProps) {
   if (!hasSelection && !isOpen) return null;
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} ref={menuRef}>
       {!isOpen && hasSelection && (
         <button
           ref={triggerRef}
@@ -75,6 +101,7 @@ export function AiBubbleMenu({ editor }: AiBubbleMenuProps) {
           className={styles.trigger}
           onClick={() => setIsOpen(true)}
           aria-label="Acciones de IA sobre la selección"
+          style={triggerStyle}
         >
           <SparklesIcon />
           <span>Acciones IA</span>
