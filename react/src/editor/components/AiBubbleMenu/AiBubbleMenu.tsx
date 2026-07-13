@@ -52,7 +52,7 @@ export function AiBubbleMenu({ editor, documentTone, documentFormat }: AiBubbleM
 
   const hasSelection = !!editor && editor.state.selection.from !== editor.state.selection.to;
 
-  const updateTriggerPosition = () => {
+  const updateTriggerPosition = useCallback(() => {
     if (!editor || !hasSelection || isOpen) {
       setTriggerStyle({ display: 'none' });
       return;
@@ -75,9 +75,11 @@ export function AiBubbleMenu({ editor, documentTone, documentFormat }: AiBubbleM
     } catch {
       setTriggerStyle({ display: 'none' });
     }
-  };
+  }, [editor, hasSelection, isOpen]);
 
-  useLayoutEffect(updateTriggerPosition, [editor, isOpen, hasSelection]);
+  useLayoutEffect(() => {
+    updateTriggerPosition();
+  }, [updateTriggerPosition]);
 
   // Reposition on scroll/resize while selection exists and menu closed
   useEffect(() => {
@@ -88,9 +90,15 @@ export function AiBubbleMenu({ editor, documentTone, documentFormat }: AiBubbleM
       window.removeEventListener('scroll', updateTriggerPosition, true);
       window.removeEventListener('resize', updateTriggerPosition);
     };
-  }, [hasSelection, isOpen, editor]);
+  }, [hasSelection, isOpen, updateTriggerPosition]);
 
   // Click outside / Escape to close
+  const handleClose = useCallback(() => {
+    setIsOpen(false);
+    clearError();
+    editor?.commands.focus();
+  }, [editor, clearError]);
+
   useEffect(() => {
     if (!isOpen) return;
     const handlePointerDown = (e: PointerEvent) => {
@@ -107,20 +115,12 @@ export function AiBubbleMenu({ editor, documentTone, documentFormat }: AiBubbleM
       document.removeEventListener('pointerdown', handlePointerDown);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isOpen]);
+  }, [isOpen, handleClose]);
 
-  const handleAction = async (actionInstruction: string) => {
-    console.log('[AiBubbleMenu] handleAction called', { actionInstruction });
+  const handleAction = useCallback(async (actionInstruction: string) => {
     const success = await rewriteSelection(actionInstruction);
-    console.log('[AiBubbleMenu] rewriteSelection returned', { success });
     if (success) setIsOpen(false);
-  };
-
-  const handleClose = () => {
-    setIsOpen(false);
-    clearError();
-    editor?.commands.focus();
-  };
+  }, [rewriteSelection]);
 
   if (!editor) return null;
   if (!hasSelection && !isOpen) return null;
