@@ -60,12 +60,16 @@ export function AiBubbleMenu({ editor, documentTone, documentFormat }: AiBubbleM
     try {
       const { from } = editor.state.selection;
       const coords = editor.view.coordsAtPos(from);
-      const editorCoords = editor.view.dom.getBoundingClientRect();
+      // Use the editor wrapper (parent of EditorContent) as reference,
+      // not editor.view.dom which has internal padding
+      const editorWrapper = editor.view.dom.closest('[style*="position: relative"]') as HTMLElement;
+      const referenceRect = editorWrapper?.getBoundingClientRect() ?? editor.view.dom.getBoundingClientRect();
+      
       setTriggerStyle({
         display: 'flex',
         position: 'absolute',
-        left: `${coords.left - editorCoords.left}px`,
-        top: `${coords.top - editorCoords.top - 44}px`,
+        left: `${coords.left - referenceRect.left}px`,
+        top: `${coords.top - referenceRect.top - 44}px`,
         zIndex: 100,
       });
     } catch {
