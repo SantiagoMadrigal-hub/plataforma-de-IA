@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo, useLayoutEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { MetricsPanel } from "./MetricsPanel";
 import { SmartDocumentList } from "./SmartDocumentList";
 import UserProfileManager from "./UserProfileManager";
+
+export { useState, useEffect, useCallback, useRef, useMemo, useLayoutEffect } from "react";
 
 const COMPONENTS = {
   MetricsPanel,
