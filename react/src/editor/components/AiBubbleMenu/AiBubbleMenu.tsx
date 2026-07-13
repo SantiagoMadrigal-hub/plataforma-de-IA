@@ -17,15 +17,27 @@ const SparklesIcon = () => (
   </svg>
 );
 
+const AI_ACTIONS = [
+  { id: 'improve', icon: '✨', label: 'Mejorar redacción', instruction: 'Mejora la redacción del texto: corrige la estructura, claridad y fluidez sin cambiar el significado.' },
+  { id: 'summarize', icon: '✂️', label: 'Resumir', instruction: 'Resume el texto seleccionado manteniendo solo las ideas principales de forma concisa.' },
+  { id: 'expand', icon: '📖', label: 'Expandir', instruction: 'Expande el texto seleccionado añadiendo más detalles, ejemplos y profundidad.' },
+  { id: 'professional', icon: '🎯', label: 'Hacer más profesional', instruction: 'Reescribe el texto con un tono más profesional, formal y corporativo.' },
+  { id: 'friendly', icon: '😊', label: 'Hacer más amigable', instruction: 'Reescribe el texto con un tono más cercano, conversacional y amigable.' },
+  { id: 'translate', icon: '🌍', label: 'Traducir', instruction: 'Traduce el texto al inglés manteniendo el tono y significado original.' },
+  { id: 'grammar', icon: '✔️', label: 'Corregir gramática', instruction: 'Corrige errores gramaticales, ortográficos y de puntuación sin cambiar el estilo.' },
+  { id: 'continue', icon: '➡️', label: 'Continuar escribiendo', instruction: 'Continúa escribiendo de forma natural a partir del texto seleccionado como si fueras el autor original.' },
+];
+
 export function AiBubbleMenu({ editor }: AiBubbleMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [instruction, setInstruction] = useState('');
-  const { isRewriting, error, rewriteSelection, clearError } = useAiRewrite(editor);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [isRewriting, setIsRewriting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { rewriteSelection, clearError } = useAiRewrite(editor);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus();
+    if (isOpen && triggerRef.current) {
+      triggerRef.current.focus();
     }
   }, [isOpen]);
 
@@ -33,15 +45,21 @@ export function AiBubbleMenu({ editor }: AiBubbleMenuProps) {
 
   const hasSelection = editor.state.selection.from !== editor.state.selection.to;
 
-  const handleRewrite = async () => {
-    await rewriteSelection(instruction || undefined);
-    setIsOpen(false);
-    setInstruction('');
+  const handleAction = async (actionInstruction: string) => {
+    setIsRewriting(true);
+    setError(null);
+    try {
+      await rewriteSelection(actionInstruction);
+      setIsOpen(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al reescribir con IA');
+    } finally {
+      setIsRewriting(false);
+    }
   };
 
   const handleClose = () => {
     setIsOpen(false);
-    setInstruction('');
     clearError();
     editor.commands.focus();
   };
@@ -52,21 +70,22 @@ export function AiBubbleMenu({ editor }: AiBubbleMenuProps) {
     <div className={styles.container}>
       {!isOpen && hasSelection && (
         <button
+          ref={triggerRef}
           type="button"
           className={styles.trigger}
           onClick={() => setIsOpen(true)}
-          aria-label="Mejorar selección con IA"
+          aria-label="Acciones de IA sobre la selección"
         >
           <SparklesIcon />
-          <span>Mejorar con IA</span>
+          <span>Acciones IA</span>
         </button>
       )}
 
       {isOpen && (
-        <div className={styles.menu} role="dialog" aria-label="Mejorar con IA">
+        <div className={styles.menu} role="dialog" aria-label="Acciones de IA sobre el texto seleccionado">
           <div className={styles.header}>
             <SparklesIcon />
-            <span>Mejorar con IA</span>
+            <span>Acciones IA</span>
             <button
               type="button"
               className={styles.closeButton}
@@ -78,48 +97,26 @@ export function AiBubbleMenu({ editor }: AiBubbleMenuProps) {
           </div>
 
           <div className={styles.body}>
-            <input
-              ref={inputRef}
-              type="text"
-              className={styles.input}
-              placeholder="Instrucción opcional (ej: hazlo más formal)"
-              value={instruction}
-              onChange={(e) => setInstruction(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !isRewriting) {
-                  handleRewrite();
-                }
-                if (e.key === 'Escape') {
-                  handleClose();
-                }
-              }}
-              disabled={isRewriting}
-            />
+            <div className={styles.actionsList}>
+              {AI_ACTIONS.map((action) => (
+                <button
+                  key={action.id}
+                  type="button"
+                  className={styles.actionItem}
+                  onClick={() => handleAction(action.instruction)}
+                  disabled={isRewriting}
+                >
+                  <span className={styles.actionIcon} aria-hidden="true">{action.icon}</span>
+                  <span className={styles.actionLabel}>{action.label}</span>
+                </button>
+              ))}
+            </div>
 
             {error && (
               <div className={styles.error} role="alert">
-                {error.message}
+                {error}
               </div>
             )}
-
-            <div className={styles.actions}>
-              <button
-                type="button"
-                className={styles.cancelButton}
-                onClick={handleClose}
-                disabled={isRewriting}
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                className={styles.rewriteButton}
-                onClick={handleRewrite}
-                disabled={isRewriting}
-              >
-                {isRewriting ? 'Mejorando...' : 'Mejorar'}
-              </button>
-            </div>
           </div>
         </div>
       )}
