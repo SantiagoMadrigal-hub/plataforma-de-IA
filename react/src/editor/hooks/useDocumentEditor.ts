@@ -1,4 +1,5 @@
 import { useEditor } from '@tiptap/react';
+import { useEffect } from 'react';
 import { editorExtensions } from '../extensions';
 import type { JSONContent } from '@tiptap/core';
 
@@ -18,7 +19,14 @@ export function useDocumentEditor(options: UseDocumentEditorOptions = {}) {
         class: 'tiptap-editor-content',
       },
     },
+    autofocus: true,
   });
+
+  useEffect(() => {
+    if (editor) {
+      editor.commands.focus();
+    }
+  }, [editor]);
 
   return editor;
 }
