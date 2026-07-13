@@ -5,6 +5,8 @@ import styles from './AiBubbleMenu.module.css';
 
 interface AiBubbleMenuProps {
   editor: Editor | null;
+  documentTone?: string;
+  documentFormat?: string;
 }
 
 const SparklesIcon = () => (
@@ -23,50 +25,42 @@ const AI_ACTIONS = [
   { id: 'expand', icon: '📖', label: 'Expandir', instruction: 'Expande el texto seleccionado añadiendo más detalles, ejemplos y profundidad.' },
   { id: 'professional', icon: '🎯', label: 'Hacer más profesional', instruction: 'Reescribe el texto con un tono más profesional, formal y corporativo.' },
   { id: 'friendly', icon: '😊', label: 'Hacer más amigable', instruction: 'Reescribe el texto con un tono más cercano, conversacional y amigable.' },
-  { id: 'translate', icon: '🌍', label: 'Traducir', instruction: 'Traduce el texto al inglés manteniendo el tono y significado original.' },
+  { id: 'translate', icon: '🌍', label: 'Traducir al inglés', instruction: 'Traduce el texto al inglés manteniendo el tono y significado original.' },
   { id: 'grammar', icon: '✔️', label: 'Corregir gramática', instruction: 'Corrige errores gramaticales, ortográficos y de puntuación sin cambiar el estilo.' },
   { id: 'continue', icon: '➡️', label: 'Continuar escribiendo', instruction: 'Continúa escribiendo de forma natural a partir del texto seleccionado como si fueras el autor original.' },
 ];
 
-export function AiBubbleMenu({ editor }: AiBubbleMenuProps) {
+export function AiBubbleMenu({ editor, documentTone, documentFormat }: AiBubbleMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isRewriting, setIsRewriting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [triggerStyle, setTriggerStyle] = useState<React.CSSProperties>({});
   const [, forceUpdate] = useState(0);
-  const { rewriteSelection, clearError } = useAiRewrite(editor);
+  const { rewriteSelection, clearError, isRewriting, error } = useAiRewrite({ editor, documentTone, documentFormat });
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  if (!editor) return null;
-
-  // Subscribe to selection changes to trigger re-renders
+  // Hooks siempre se ejecutan — guard clauses dentro
   useEffect(() => {
+    if (!editor) return;
     const handler = () => forceUpdate(n => n + 1);
     editor.on('selectionUpdate', handler);
-    return () => editor.off('selectionUpdate', handler);
+    return () => { editor.off('selectionUpdate', handler); };
   }, [editor]);
 
-  const hasSelection = editor.state.selection.from !== editor.state.selection.to;
-
   useEffect(() => {
-    if (isOpen && triggerRef.current) {
-      triggerRef.current.focus();
-    }
+    if (isOpen && triggerRef.current) triggerRef.current.focus();
   }, [isOpen]);
 
-  // Position trigger button at selection coordinates
-  useLayoutEffect(() => {
-    if (!hasSelection || isOpen) {
+  const hasSelection = !!editor && editor.state.selection.from !== editor.state.selection.to;
+
+  const updateTriggerPosition = () => {
+    if (!editor || !hasSelection || isOpen) {
       setTriggerStyle({ display: 'none' });
       return;
     }
-
     try {
       const { from } = editor.state.selection;
       const coords = editor.view.coordsAtPos(from);
       const editorCoords = editor.view.dom.getBoundingClientRect();
-
       setTriggerStyle({
         display: 'flex',
         position: 'absolute',
@@ -77,27 +71,52 @@ export function AiBubbleMenu({ editor }: AiBubbleMenuProps) {
     } catch {
       setTriggerStyle({ display: 'none' });
     }
-  }, [editor, isOpen, hasSelection]);
+  };
+
+  useLayoutEffect(updateTriggerPosition, [editor, isOpen, hasSelection]);
+
+  // Reposition on scroll/resize while selection exists and menu closed
+  useEffect(() => {
+    if (!hasSelection || isOpen) return;
+    window.addEventListener('scroll', updateTriggerPosition, true);
+    window.addEventListener('resize', updateTriggerPosition);
+    return () => {
+      window.removeEventListener('scroll', updateTriggerPosition, true);
+      window.removeEventListener('resize', updateTriggerPosition);
+    };
+  }, [hasSelection, isOpen, editor]);
+
+  // Click outside / Escape to close
+  useEffect(() => {
+    if (!isOpen) return;
+    const handlePointerDown = (e: PointerEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        handleClose();
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') handleClose();
+    };
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen]);
 
   const handleAction = async (actionInstruction: string) => {
-    setIsRewriting(true);
-    setError(null);
-    try {
-      await rewriteSelection(actionInstruction);
-      setIsOpen(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al reescribir con IA');
-    } finally {
-      setIsRewriting(false);
-    }
+    const success = await rewriteSelection(actionInstruction);
+    if (success) setIsOpen(false);
   };
 
   const handleClose = () => {
     setIsOpen(false);
     clearError();
-    editor.commands.focus();
+    editor?.commands.focus();
   };
 
+  if (!editor) return null;
   if (!hasSelection && !isOpen) return null;
 
   return (
@@ -117,7 +136,7 @@ export function AiBubbleMenu({ editor }: AiBubbleMenuProps) {
       )}
 
       {isOpen && (
-        <div className={styles.menu} role="dialog" aria-label="Acciones de IA sobre el texto seleccionado">
+        <div className={styles.menu} role="dialog" aria-modal="true" aria-label="Acciones de IA sobre el texto seleccionado">
           <div className={styles.header}>
             <SparklesIcon />
             <span>Acciones IA</span>
@@ -141,7 +160,9 @@ export function AiBubbleMenu({ editor }: AiBubbleMenuProps) {
                   onClick={() => handleAction(action.instruction)}
                   disabled={isRewriting}
                 >
-                  <span className={styles.actionIcon} aria-hidden="true">{action.icon}</span>
+                  <span className={styles.actionIcon} aria-hidden="true">
+                    {isRewriting ? '⏳' : action.icon}
+                  </span>
                   <span className={styles.actionLabel}>{action.label}</span>
                 </button>
               ))}
@@ -149,7 +170,7 @@ export function AiBubbleMenu({ editor }: AiBubbleMenuProps) {
 
             {error && (
               <div className={styles.error} role="alert">
-                {error}
+                {error.message}
               </div>
             )}
           </div>

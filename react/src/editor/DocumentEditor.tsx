@@ -79,6 +79,10 @@ export function DocumentEditor({
     },
   });
 
+  // Extract tone and format from loaded document for AI rewrite context
+  const documentTone = loadedDoc?.tone;
+  const documentFormat = loadedDoc?.type;
+
   const handleImageUpload = useCallback(async (file: File) => {
     try {
       const result = await imageUploadService.upload(file);
@@ -124,9 +128,9 @@ export function DocumentEditor({
     >
       <div className={styles.container}>
         <Toolbar editor={editor} onImageUpload={handleImageUpload} />
-        <div className={styles.editorWrapper}>
+        <div className={styles.editorWrapper} style={{ position: 'relative' }}>
           <EditorContent editor={editor} className={styles.editorContent} />
-          <AiBubbleMenu editor={editor} />
+          <AiBubbleMenu editor={editor} documentTone={documentTone} documentFormat={documentFormat} />
         </div>
         <SaveStatusIndicator status={saveStatus} />
       </div>

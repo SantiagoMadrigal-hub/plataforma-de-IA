@@ -1,6 +1,11 @@
 .container {
-  position: relative;
-  display: inline-flex;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.trigger, .menu {
+  pointer-events: auto;
 }
 
 .trigger {
@@ -16,6 +21,7 @@
   cursor: pointer;
   transition: background var(--transition-fast);
   box-shadow: var(--shadow-md);
+  white-space: nowrap;
 }
 
 .trigger:hover {
@@ -32,7 +38,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-lg);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  z-index: 50;
+  z-index: 101;
 }
 
 .header {
@@ -69,81 +75,6 @@
 
 .body {
   padding: var(--space-3);
-}
-
-.input {
-  width: 100%;
-  padding: var(--space-2) var(--space-3);
-  background: var(--bg-page);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-md);
-  color: #e4e4e7;
-  font-size: var(--text-sm);
-  outline: none;
-  transition: border-color var(--transition-fast);
-}
-
-.input:focus {
-  border-color: var(--color-primary);
-}
-
-.input::placeholder {
-  color: #71717a;
-}
-
-.error {
-  margin-top: var(--space-2);
-  padding: var(--space-2);
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  border-radius: var(--radius-sm);
-  color: var(--color-error);
-  font-size: var(--text-xs);
-}
-
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-2);
-  margin-top: var(--space-3);
-}
-
-.cancelButton {
-  padding: var(--space-2) var(--space-3);
-  background: none;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-md);
-  color: #a1a1aa;
-  font-size: var(--text-sm);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.cancelButton:hover:not(:disabled) {
-  background: rgba(79, 70, 229, 0.15);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-}
-
-.rewriteButton {
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-primary);
-  border: none;
-  border-radius: var(--radius-md);
-  color: white;
-  font-size: var(--text-sm);
-  cursor: pointer;
-  transition: background var(--transition-fast);
-}
-
-.rewriteButton:hover:not(:disabled) {
-  background: var(--color-primary-hover);
-}
-
-.rewriteButton:disabled,
-.cancelButton:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 
 .actionsList {
@@ -188,6 +119,16 @@
 
 .actionLabel {
   flex: 1;
+}
+
+.error {
+  margin-top: var(--space-2);
+  padding: var(--space-2);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-sm);
+  color: var(--color-error);
+  font-size: var(--text-xs);
 }
 
 @media (max-width: 640px) {

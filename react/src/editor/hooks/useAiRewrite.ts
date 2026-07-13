@@ -8,15 +8,21 @@ interface AiRewriteState {
   error: EditorError | null;
 }
 
-export function useAiRewrite(editor: Editor | null) {
+interface UseAiRewriteOptions {
+  editor: Editor | null;
+  documentTone?: string;
+  documentFormat?: string;
+}
+
+export function useAiRewrite({ editor, documentTone, documentFormat }: UseAiRewriteOptions) {
   const [state, setState] = useState<AiRewriteState>({
     isRewriting: false,
     error: null,
   });
 
   const rewriteSelection = useCallback(
-    async (instruction?: string) => {
-      if (!editor) return;
+    async (instruction?: string): Promise<boolean> => {
+      if (!editor) return false;
 
       const { from, to } = editor.state.selection;
       const selectedText = editor.state.doc.textBetween(from, to, '\n');
@@ -29,7 +35,7 @@ export function useAiRewrite(editor: Editor | null) {
             message: 'Selecciona un texto para mejorar',
           },
         });
-        return;
+        return false;
       }
 
       setState({ isRewriting: true, error: null });
@@ -38,8 +44,8 @@ export function useAiRewrite(editor: Editor | null) {
         const result = await aiRewriteService.rewrite({
           selectedText,
           instruction,
-          documentFormat: undefined,
-          documentTone: undefined,
+          documentFormat,
+          documentTone,
         });
 
         editor
@@ -50,6 +56,7 @@ export function useAiRewrite(editor: Editor | null) {
           .run();
 
         setState({ isRewriting: false, error: null });
+        return true;
       } catch (err) {
         setState({
           isRewriting: false,
@@ -59,9 +66,10 @@ export function useAiRewrite(editor: Editor | null) {
             cause: err,
           },
         });
+        return false;
       }
     },
-    [editor]
+    [editor, documentTone, documentFormat]
   );
 
   const clearError = useCallback(() => {
