@@ -13,6 +13,7 @@ El proyecto está pensado para equipos que necesitan generar contenido de forma 
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react&logoColor=black)
 ![HTML5](https://img.shields.io/badge/HTML5-standard-E34F26?style=flat&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-standard-1572B6?style=flat&logo=css3&logoColor=white)
+![TipTap](https://img.shields.io/badge/TipTap-editor-FF6B6B?style=flat&logo=tiptap&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)
 
@@ -23,14 +24,16 @@ El proyecto está pensado para equipos que necesitan generar contenido de forma 
 | Capa | Tecnología | Propósito |
 |---|---|---|
 | Frontend (páginas principales) | HTML5, CSS3, JavaScript (ES Modules nativos) | Interfaz sin bundler, carga directa vía módulos ES |
-| Frontend (componentes interactivos) | React 19 + Vite 8 | Componentes montados selectivamente en elementos `.react-mount` mediante `react-bridge.js` |
+| Frontend (componentes interactivos) | React 19 + Vite 8 + TipTap | Editor rico + menú IA, montados selectivamente en elementos `.react-mount` mediante `react-bridge.js` |
 | Backend | Vercel Serverless Functions (Node.js, CommonJS) | Una función serverless por endpoint, exportada con `module.exports` |
 | Base de datos | Supabase (PostgreSQL) | Persistencia relacional con Row Level Security |
 | Autenticación | JWT (jsonwebtoken) + refresh tokens propios | Control total del ciclo de vida de sesión |
 | Validación | Zod | Validación de esquemas de entrada en cada endpoint |
-| IA | Groq API (llama-3.3-70b-versatile) | Generación de contenido mediante LLM |
+| IA | Groq API (llama-3.3-70b-versatile) | Generación de contenido mediante LLM, streaming SSE |
 | Despliegue | Vercel | Hosting serverless y CDN |
 | Control de versiones | Git + GitHub | Historial y colaboración |
+| CI/CD | GitHub Actions | Typecheck, lint, test, build en cada PR/push |
+| Testing | Vitest (unit) + Playwright (e2e) | 55 tests unitarios + flujos críticos e2e |
 
 **Dependencias principales (backend):**
 
@@ -72,6 +75,8 @@ El cliente nunca accede directamente a Supabase ni a Groq: toda la lógica de ne
 
 **Rate limiting mediante consultas a base de datos, sin Redis.** Al tratarse de un entorno serverless donde no hay estado compartido entre invocaciones, se optó por contar las generaciones del día directamente en PostgreSQL en lugar de introducir una dependencia adicional como Redis. Esto simplifica la infraestructura y mantiene el conteo consistente entre invocaciones concurrentes.
 
+**Chunk splitting en build.** `vite.config.ts` define `manualChunks` para separar `vendor`, `editor` (TipTap), `ai` (servicios IA) y `ui` — reduciendo el bundle principal a ~200KB gzipped.
+
 ---
 
 ## Seguridad
@@ -101,11 +106,24 @@ El cliente nunca accede directamente a Supabase ni a Groq: toda la lógica de ne
 
 - Registro e inicio de sesión con email/contraseña, y registro/login con Google OAuth.
 - Emisión y renovación de sesión mediante access tokens de corta duración y refresh tokens rotativos.
-- Generación de contenido en cinco formatos (Instagram, blog, YouTube, email, SEO) con cuatro tonos configurables.
+- **Generación de contenido en 6 formatos** (Instagram, Blog, YouTube, Email, SEO, LinkedIn) con **4 tonos configurables** (profesional, divertido, formal, creativo).
+- **Streaming SSE token-by-token** desde `/api/generate` → UI renderiza en tiempo real.
 - Límite de generaciones diarias según el plan del usuario.
+- **Editor TipTap completo** (headings, bold, italic, code, listas, task lists, imágenes, links, blockquotes).
+- **Menú burbuja IA contextual** — al seleccionar texto aparece botón flotante con 8 acciones:
+  - ✨ **Mejorar redacción** — corrige estructura, claridad y fluidez
+  - ✂️ **Resumir** — ideas principales de forma concisa
+  - 📖 **Expandir** — añade detalles, ejemplos y profundidad
+  - 🎯 **Hacer más profesional** — tono corporativo y formal
+  - 😊 **Hacer más amigable** — tono cercano y conversacional
+  - 🌍 **Traducir al inglés** — mantiene tono y significado
+  - ✔️ **Corregir gramática** — ortografía, puntuación, sintaxis
+  - ➡️ **Continuar escribiendo** — sigue el texto como autor original
 - Gestión de documentos generados: creación, listado paginado, edición y eliminación, restringida al propietario del recurso.
-- Dashboard con métricas de uso.
+- Dashboard con métricas de uso por plan.
 - Renovación de sesión transparente ante expiración del access token, incluyendo al recargar la página.
+- **Accesibilidad**: `aria-modal`, focus trap, Escape para cerrar, click fuera para cerrar, focus management.
+- **Error boundaries** en componentes React con UI de fallback y reporte de errores.
 
 ---
 
@@ -137,7 +155,7 @@ Lexora/
 ├── schemas/
 │   ├── auth.schema.js          registerSchema + loginSchema
 │   ├── document.schema.js      createDocumentSchema + updateDocumentSchema
-│   └── generate.schema.js      FORMATS = ['instagram','blog','youtube','email','seo'], TONES = ['profesional','divertido','formal','creativo']
+│   └── generate.schema.js      FORMATS = ['instagram','blog','youtube','email','seo','linkedin'], TONES = ['profesional','divertido','formal','creativo']
 ├── supabase/
 │   └── migrations/
 │       └── 001_init.sql        Tablas: users, refresh_tokens, documents, generations
@@ -150,21 +168,36 @@ Lexora/
 │   ├── history.html            Historial de documentos
 │   ├── profile.html            Perfil de usuario
 │   ├── settings.html           Configuración
-│   ├── css/                    Estilos globales y componentes
+│   ├── css/                    Estilos globales y componentes (variables CSS, dark theme)
 │   └── js/
 │       ├── main.js             Punto de entrada, inicializa servicios
 │       ├── services/
 │       │   ├── http.js         Fetch wrapper con token management y refresh automático en 401
 │       │   ├── auth.service.js AuthService: init, login, register, logout, loginWithGoogle, isAuthenticated
 │       │   ├── document.service.js DocumentService: getAll, getById, create, update, delete
-│       │   ├── ai.service.js   AIService: generate (callProxy + mock fallback), save
-│       │   ├── repository.js   Abstracción localStorage (solo para preferencias UI)
+│       │   ├── ai.service.js   AIService: generateStream (SSE), save, rewriteText
+│       │   ├── repository.js   Abstracción localStorage (solo preferencias UI)
 │       │   └── storage.adapter.js LocalStorageAdapter + SupabaseAdapter
 │       └── controllers/        auth.controller, document.controller, form.controller, SettingsController
 ├── react/
 │   ├── package.json            React 19 + Vite 8
-│   ├── src/                    Componentes React (MetricsPanel, SmartDocumentList, UserProfileManager)
+│   ├── vite.config.ts          manualChunks: vendor, editor, ai, ui
+│   ├── src/
+│   │   ├── editor/             TipTap editor + AiBubbleMenu (8 acciones IA)
+│   │   │   ├── components/AiBubbleMenu/   Menú contextual con 8 acciones
+│   │   │   ├── hooks/useAiRewrite.ts      Hook que orquesta rewrite
+│   │   │   ├── hooks/useDocumentEditor.ts Editor TipTap configurado
+│   │   │   ├── services/aiRewriteService.ts Proxy a window.ContentFlowApp.services.ai.rewriteText
+│   │   │   └── DocumentEditor.tsx         Componente principal montado en .react-mount
+│   │   ├── components/         MetricsPanel, SmartDocumentList, UserProfileManager
+│   │   └── main-bridge.tsx     Punto de entrada, monta componentes en .react-mount
 │   └── ...
+├── tests/
+│   ├── lib/                    Unit tests: errors, jwt, password, schemas
+│   ├── editor/                 Unit tests: markdownSerializer
+│   └── setup.ts                Vitest globals
+├── playwright/
+│   └── generate-content.spec.ts E2E: flujo completo generar → editar → acción IA
 ├── package.json                Dependencias raíz (backend)
 ├── vercel.json                 Rewrites + maxDuration: 30
 └── .env.example                Template de variables de entorno
@@ -193,6 +226,26 @@ vercel dev
 | `SUPABASE_SERVICE_ROLE_KEY` | Service role key de Supabase (solo backend, nunca cliente) |
 | `JWT_SECRET` | Secreto para firmar y verificar JWT |
 | `GROQ_API_KEY` | API key de Groq para generar contenido |
+
+---
+
+## Scripts útiles
+
+```bash
+# Raíz (backend)
+npm run test        # Vitest unit tests (55 tests)
+npm run typecheck   # tsc --noEmit
+
+# React (frontend interactivo)
+cd react
+npm run dev         # Vite dev server
+npm run build       # Build producción → ../html/js/
+npm run lint        # oxlint
+npm run preview     # Preview build
+
+# E2E
+npx playwright test
+```
 
 ---
 
