@@ -80,8 +80,9 @@ export function DocumentEditor({
   });
 
   // Extract tone and format from loaded document for AI rewrite context
-  const documentTone = loadedDoc?.tone;
-  const documentFormat = loadedDoc?.type;
+  // Fallback to mountElement dataset (set by document.controller.js) for immediate availability
+  const documentTone = loadedDoc?.tone || (mountElement as HTMLElement)?.dataset?.tone || undefined;
+  const documentFormat = loadedDoc?.type || (mountElement as HTMLElement)?.dataset?.format || undefined;
 
   const handleImageUpload = useCallback(async (file: File) => {
     try {
