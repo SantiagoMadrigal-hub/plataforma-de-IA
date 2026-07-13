@@ -22,12 +22,18 @@ export function useAiRewrite({ editor, documentTone, documentFormat }: UseAiRewr
 
   const rewriteSelection = useCallback(
     async (instruction?: string): Promise<boolean> => {
-      if (!editor) return false;
+      console.log('[useAiRewrite] rewriteSelection called', { instruction, hasEditor: !!editor });
+      if (!editor) {
+        console.log('[useAiRewrite] no editor');
+        return false;
+      }
 
       const { from, to } = editor.state.selection;
       const selectedText = editor.state.doc.textBetween(from, to, '\n');
+      console.log('[useAiRewrite] selection', { from, to, selectedText: selectedText.substring(0, 50) });
 
       if (!selectedText.trim()) {
+        console.log('[useAiRewrite] empty selection');
         setState({
           isRewriting: false,
           error: {
@@ -41,12 +47,14 @@ export function useAiRewrite({ editor, documentTone, documentFormat }: UseAiRewr
       setState({ isRewriting: true, error: null });
 
       try {
+        console.log('[useAiRewrite] calling aiRewriteService...');
         const result = await aiRewriteService.rewrite({
           selectedText,
           instruction,
           documentFormat,
           documentTone,
         });
+        console.log('[useAiRewrite] got result', { rewrittenText: result.rewrittenText?.substring(0, 50) });
 
         editor
           .chain()
@@ -54,10 +62,12 @@ export function useAiRewrite({ editor, documentTone, documentFormat }: UseAiRewr
           .deleteRange({ from, to })
           .insertContent(result.rewrittenText)
           .run();
+        console.log('[useAiRewrite] editor chain executed');
 
         setState({ isRewriting: false, error: null });
         return true;
       } catch (err) {
+        console.error('[useAiRewrite] error', err);
         setState({
           isRewriting: false,
           error: {
