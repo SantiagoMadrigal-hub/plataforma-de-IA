@@ -1910,6 +1910,11 @@ body.dark-theme {
   color: #e4e4e7;
 }
 
+.dark-theme h1,
+.dark-theme h2 {
+  color: #f4f4f5;
+}
+
 /* --- Navbar (landing page) --- */
 .dark-theme .navbar {
   background-color: var(--bg-surface);
