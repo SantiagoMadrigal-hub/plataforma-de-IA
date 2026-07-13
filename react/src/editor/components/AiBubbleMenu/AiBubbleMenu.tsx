@@ -110,7 +110,9 @@ export function AiBubbleMenu({ editor, documentTone, documentFormat }: AiBubbleM
   }, [isOpen]);
 
   const handleAction = async (actionInstruction: string) => {
+    console.log('[AiBubbleMenu] handleAction called', { actionInstruction });
     const success = await rewriteSelection(actionInstruction);
+    console.log('[AiBubbleMenu] rewriteSelection returned', { success });
     if (success) setIsOpen(false);
   };
 
@@ -130,7 +132,10 @@ export function AiBubbleMenu({ editor, documentTone, documentFormat }: AiBubbleM
           ref={triggerRef}
           type="button"
           className={styles.trigger}
-          onClick={() => setIsOpen(true)}
+          onClick={() => {
+            console.log('[AiBubbleMenu] trigger clicked');
+            setIsOpen(true);
+          }}
           aria-label="Acciones de IA sobre la selección"
           style={triggerStyle}
         >
@@ -161,7 +166,10 @@ export function AiBubbleMenu({ editor, documentTone, documentFormat }: AiBubbleM
                   key={action.id}
                   type="button"
                   className={styles.actionItem}
-                  onClick={() => handleAction(action.instruction)}
+                  onClick={() => {
+                    console.log('[AiBubbleMenu] action item clicked', { action: action.id });
+                    handleAction(action.instruction);
+                  }}
                   disabled={isRewriting}
                 >
                   <span className={styles.actionIcon} aria-hidden="true">
