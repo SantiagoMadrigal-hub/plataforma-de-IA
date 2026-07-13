@@ -433,6 +433,8 @@ export const DocumentController = {
               editorMount.setAttribute("data-document-id", saved.id);
               editorMount.setAttribute("data-mode", "edit");
               editorMount.setAttribute("data-initial-content", saved.content);
+              editorMount.setAttribute("data-tone", saved.tone || "");
+              editorMount.setAttribute("data-format", saved.format || "");
 
               if (window.ContentFlowApp && window.ContentFlowApp.mountNewComponents) {
                 setTimeout(() => {
