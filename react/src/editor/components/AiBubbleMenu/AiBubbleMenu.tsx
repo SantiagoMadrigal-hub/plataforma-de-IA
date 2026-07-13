@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
 import type { Editor } from '@tiptap/core';
 import { useAiRewrite } from '../../hooks/useAiRewrite';
 import styles from './AiBubbleMenu.module.css';
